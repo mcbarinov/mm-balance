@@ -68,7 +68,7 @@ class Config(BaseConfig):
     groups: list[Group]
     addresses: list[Addresses] = Field(default_factory=list)
 
-    mm_proxies_app: str | None = None
+    proxies_url: str | None = None
     proxies: list[str] = Field(default_factory=list)
     round_ndigits: int = 4
     nodes: dict[Network, list[str]] = Field(default_factory=dict)
@@ -90,9 +90,9 @@ class Config(BaseConfig):
 
     @model_validator(mode="after")
     def final_validator(self) -> Self:
-        # load mm_proxies
-        if self.mm_proxies_app is not None:
-            self.proxies = get_proxies(self.mm_proxies_app)
+        # load from proxies_url
+        if self.proxies_url is not None:
+            self.proxies = get_proxies(self.proxies_url)
 
         # load addresses
         for group in self.groups:
@@ -138,14 +138,14 @@ def detect_token_address(coin: str, network: str) -> str | None:
             return EthTokenAddress.USDT
         if coin.lower() == "usdc":
             return EthTokenAddress.USDC
-        if coin.lower() == "sdai":
-            return EthTokenAddress.SDAI
 
 
-def get_proxies(mm_proxies_app: str) -> list[str]:
+def get_proxies(proxies_url: str) -> list[str]:
     try:
-        url, token = mm_proxies_app.split("|")
-        res = hr(url + "/api/proxies/live", headers={"access-token": token})
-        return res.json["proxies"]  # type: ignore[no-any-return]
+        res = hr(proxies_url)
+        if res.is_error():
+            fatal(f"Can't get proxies: {res.error}")
+        proxies = [p.strip() for p in res.body.splitlines() if p.strip()]
+        return pydash.uniq(proxies)
     except Exception as err:
         fatal(f"Can't get  proxies: {err}")

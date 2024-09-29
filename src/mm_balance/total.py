@@ -18,7 +18,7 @@ class Total:
     usd_sum: Decimal  # sum of all coins in USD
     usd_sum_ratio: Decimal
 
-    stablecoin_sum: Decimal  # sum of usd stablecoins: usdt, usdc, sdai
+    stablecoin_sum: Decimal  # sum of usd stablecoins: usdt, usdc
     stablecoin_sum_ratio: Decimal
 
     @classmethod

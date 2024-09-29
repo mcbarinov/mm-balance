@@ -42,7 +42,5 @@ def coingecko_id(group: Config.Group) -> str:
         return "tether"
     elif group.coin.lower() == "usdc" or (group.token_address is not None and group.token_address == EthTokenAddress.USDC):
         return "usd-coin"
-    elif group.coin.lower() == "sdai" or (group.token_address is not None and group.token_address == EthTokenAddress.SDAI):
-        return "dai"
 
     raise ValueError(f"can't get coingecko_id for {group.coin}")

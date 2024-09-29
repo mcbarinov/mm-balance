@@ -11,11 +11,10 @@ class Coin(str, Enum):
     ETH = "ETH"
     USDT = "USDT"
     USDC = "USDC"
-    SDAI = "SDAI"
 
     @classmethod
     def usd_coins(cls) -> list[Coin]:
-        return [Coin.USDT, Coin.USDC, Coin.SDAI]
+        return [Coin.USDT, Coin.USDC]
 
 
 @unique
@@ -28,4 +27,3 @@ class Network(str, Enum):
 class EthTokenAddress(str, Enum):
     USDT = "0xdac17f958d2ee523a2206206994597c13d831ec7"
     USDC = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
-    SDAI = "0x83f20f44975d03b1b09e64809b757c47f942beea"

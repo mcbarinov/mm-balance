@@ -19,7 +19,7 @@ class Config(BaseConfig):
         coingecko_id: str | None = None
         addresses: list[str] = Field(default_factory=list)
         address_group: str | None = None
-        sum_share: Decimal = Decimal(1)
+        share: Decimal = Decimal(1)
 
         @property
         def name(self) -> str:
@@ -86,7 +86,7 @@ class Config(BaseConfig):
         return [g for g in self.groups if g.network == Network.ETH]
 
     def has_sum_share(self) -> bool:
-        return any(g.sum_share != Decimal(1) for g in self.groups)
+        return any(g.share != Decimal(1) for g in self.groups)
 
     @model_validator(mode="after")
     def final_validator(self) -> Self:

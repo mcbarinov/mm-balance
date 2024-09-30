@@ -32,10 +32,10 @@ def _print_group(group: Config.Group, group_balances: list[Balances.Balance], co
         sum_row.append(round(usd_sum, config.round_ndigits))
     rows.append(sum_row)
 
-    if group.sum_share < Decimal(1):
-        sum_share_row = [f"sum_share, {group.sum_share}", round(balance_sum * group.sum_share, config.round_ndigits)]
+    if group.share < Decimal(1):
+        sum_share_row = [f"sum_share, {group.share}", round(balance_sum * group.share, config.round_ndigits)]
         if config.price:
-            sum_share_row.append(round(usd_sum * group.sum_share, config.round_ndigits))
+            sum_share_row.append(round(usd_sum * group.share, config.round_ndigits))
         rows.append(sum_share_row)
 
     table_headers = ["address", "balance"]

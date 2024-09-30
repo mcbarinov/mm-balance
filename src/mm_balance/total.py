@@ -39,14 +39,14 @@ class Total:
                     balance_sum += address_task.balance.ok
                     if group.coin in Coin.usd_coins():
                         stablecoin_sum += address_task.balance.ok
-                        stablecoin_sum_share += address_task.balance.ok * group.sum_share
+                        stablecoin_sum_share += address_task.balance.ok * group.share
                     if config.price:
                         balance_usd = round(address_task.balance.ok * prices[group.coin], config.round_ndigits)
                         usd_sum += balance_usd
-                        usd_sum_share += group.sum_share * balance_usd
+                        usd_sum_share += group.share * balance_usd
 
             coins[group.coin] += balance_sum
-            coins_share[group.coin] += round(balance_sum * group.sum_share, config.round_ndigits)
+            coins_share[group.coin] += round(balance_sum * group.share, config.round_ndigits)
         return cls(
             coins=coins,
             coins_share=coins_share,

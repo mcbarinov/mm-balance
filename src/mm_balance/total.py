@@ -7,6 +7,7 @@ from mm_std import Ok, PrintFormat, print_table
 
 from mm_balance.balances import Balances
 from mm_balance.config import Config
+from mm_balance.price import Prices
 from mm_balance.types import Coin
 
 
@@ -22,7 +23,7 @@ class Total:
     stablecoin_sum_share: Decimal
 
     @classmethod
-    def calc(cls, balances: Balances, prices: dict[str, Decimal], config: Config) -> Self:
+    def calc(cls, balances: Balances, prices: Prices, config: Config) -> Self:
         coins: dict[str, Decimal] = defaultdict(Decimal)
         coins_share: dict[str, Decimal] = defaultdict(Decimal)
         usd_share: dict[str, Decimal] = defaultdict(Decimal)
@@ -57,7 +58,7 @@ class Total:
             stablecoin_sum_share=stablecoin_sum_share,
         )
 
-    def print(self, print_format: PrintFormat, prices: dict[str, Decimal], config: Config) -> None:
+    def print(self, print_format: PrintFormat, prices: Prices, config: Config) -> None:
         if print_format == PrintFormat.TABLE:
             # print total total
             rows = []

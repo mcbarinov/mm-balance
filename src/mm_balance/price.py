@@ -8,8 +8,17 @@ from mm_balance.config import Config
 from mm_balance.types import EthTokenAddress, Network
 
 
-def get_prices(config: Config) -> dict[str, Decimal]:
-    result = {}
+class Prices(dict[str, Decimal]):
+    """
+    A Prices class representing a mapping from coin names to their prices.
+
+    Inherits from:
+        Dict[str, Decimal]: A dictionary with coin names as keys and their prices as Decimal values.
+    """
+
+
+def get_prices(config: Config) -> Prices:
+    result = Prices()
     for group in config.groups:
         res = get_asset_price(coingecko_id(group), config.proxies)
         if isinstance(res, Ok):

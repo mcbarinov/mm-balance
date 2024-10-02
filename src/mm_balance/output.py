@@ -4,16 +4,17 @@ from mm_std import Ok, PrintFormat, print_table
 
 from mm_balance.balances import Balances
 from mm_balance.config import Config
+from mm_balance.price import Prices
 from mm_balance.total import Total
 
 
-def print_groups(balances: Balances, config: Config, prices: dict[str, Decimal]) -> None:
+def print_groups(balances: Balances, config: Config, prices: Prices) -> None:
     for group_index, group in enumerate(config.groups):
         group_balances = balances.get_group_balances(group_index, group.network)
         _print_group(group, group_balances, config, prices)
 
 
-def _print_group(group: Config.Group, group_balances: list[Balances.Balance], config: Config, prices: dict[str, Decimal]) -> None:
+def _print_group(group: Config.Group, group_balances: list[Balances.Balance], config: Config, prices: Prices) -> None:
     rows = []
     balance_sum = Decimal(0)
     usd_sum = Decimal(0)
@@ -44,12 +45,12 @@ def _print_group(group: Config.Group, group_balances: list[Balances.Balance], co
     print_table(group.name, table_headers, rows)
 
 
-def print_prices(config: Config, prices: dict[str, Decimal]) -> None:
+def print_prices(config: Config, prices: Prices) -> None:
     if config.price:
         rows = [[k, round(v, config.round_ndigits)] for (k, v) in prices.items()]
         print_table("price", ["coin", "usd"], rows)
 
 
-def print_total(config: Config, balances: Balances, prices: dict[str, Decimal]) -> None:
+def print_total(config: Config, balances: Balances, prices: Prices) -> None:
     total = Total.calc(balances, prices, config)
     total.print(PrintFormat.TABLE, prices, config)

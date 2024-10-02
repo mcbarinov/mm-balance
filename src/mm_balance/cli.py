@@ -6,7 +6,7 @@ import click
 from mm_balance import output
 from mm_balance.balances import Balances
 from mm_balance.config import Config
-from mm_balance.price import get_prices
+from mm_balance.price import Prices, get_prices
 
 
 @click.command()
@@ -17,7 +17,7 @@ def cli(config_path: pathlib.Path) -> None:
         zip_password = getpass.getpass("zip password")
     config = Config.read_config(config_path, zip_password=zip_password)
 
-    prices = get_prices(config) if config.price else {}
+    prices = get_prices(config) if config.price else Prices()
     balances = Balances.from_config(config)
     balances.process()
 

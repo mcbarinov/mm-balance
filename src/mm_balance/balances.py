@@ -3,7 +3,7 @@ from __future__ import annotations
 from decimal import Decimal
 
 from mm_std import ConcurrentTasks, Result
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 
 from mm_balance import btc, eth
 from mm_balance.config import Config
@@ -12,7 +12,6 @@ from mm_balance.types import Network
 
 class Balances(BaseModel):
     class Balance(BaseModel):
-        model_config = ConfigDict(arbitrary_types_allowed=True)
         group_index: int
         address: str
         token_address: str | None

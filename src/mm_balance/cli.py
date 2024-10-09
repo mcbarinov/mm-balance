@@ -1,17 +1,30 @@
 import getpass
 import pathlib
+import pkgutil
+from typing import Annotated
 
-import click
+import typer
 
 from mm_balance import output
 from mm_balance.balances import Balances
 from mm_balance.config import Config
 from mm_balance.price import Prices, get_prices
 
+app = typer.Typer(no_args_is_help=True, pretty_exceptions_enable=False, add_completion=False)
 
-@click.command()
-@click.argument("config_path", type=click.Path(exists=True, path_type=pathlib.Path))
-def cli(config_path: pathlib.Path) -> None:
+
+def example_callback(value: bool) -> None:
+    if value:
+        data = pkgutil.get_data(__name__, "config/example.yml")
+        typer.echo(data)
+        raise typer.Exit
+
+
+@app.command()
+def cli(
+    config_path: Annotated[pathlib.Path, typer.Argument()],
+    _example: Annotated[bool | None, typer.Option("--example", callback=example_callback, help="Print a config example.")] = None,
+) -> None:
     zip_password = ""  # nosec
     if config_path.name.endswith(".zip"):
         zip_password = getpass.getpass("zip password")
@@ -24,3 +37,7 @@ def cli(config_path: pathlib.Path) -> None:
     output.print_groups(balances, config, prices)
     output.print_prices(config, prices)
     output.print_total(config, balances, prices)
+
+
+if __name__ == "__main__":
+    app()

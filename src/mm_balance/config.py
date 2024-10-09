@@ -82,7 +82,7 @@ class Config(BaseConfig):
     round_ndigits: int = 4
     nodes: dict[Network, list[str]] = Field(default_factory=dict)
     print_format: PrintFormat = PrintFormat.TABLE
-    price: bool = False
+    price: bool = True
 
     # non configs
     workers: Workers = Workers()

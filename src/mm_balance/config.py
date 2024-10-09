@@ -18,7 +18,6 @@ class Config(BaseConfig):
         token_address: str | None = None
         coingecko_id: str | None = None
         addresses: list[str] = Field(default_factory=list)
-        address_group: str | None = None
         share: Decimal = Decimal(1)
 
         @property
@@ -50,7 +49,17 @@ class Config(BaseConfig):
                 self.token_address = self.token_address.lower()
             return self
 
-    class Addresses(BaseConfig):
+        def process_addresses(self, address_groups: list[Config.AddressGroup]) -> None:
+            addresses: list[str] = []
+            for address in self.addresses:
+                if address_group := pydash.find(address_groups, lambda g: g.name == address):  # noqa: B023
+                    addresses.extend(address_group.addresses)
+                else:
+                    # TODO: check address is valid
+                    addresses.append(address)
+            self.addresses = addresses
+
+    class AddressGroup(BaseConfig):
         name: str
         addresses: list[str]
 
@@ -66,7 +75,7 @@ class Config(BaseConfig):
         eth: dict[str, int] = Field(default_factory=dict)
 
     groups: list[Group]
-    addresses: list[Addresses] = Field(default_factory=list)
+    addresses: list[AddressGroup] = Field(default_factory=list)
 
     proxies_url: str | None = None
     proxies: list[str] = Field(default_factory=list)
@@ -94,14 +103,9 @@ class Config(BaseConfig):
         if self.proxies_url is not None:
             self.proxies = get_proxies(self.proxies_url)
 
-        # load addresses
+        # load addresses from address_group
         for group in self.groups:
-            if group.address_group is not None:
-                address_group = pydash.find(self.addresses, lambda g: g.name == group.address_group)  # noqa: B023
-                if address_group is None:
-                    fatal(f"can't find address group: {group.address_group}")
-                group.addresses.extend(address_group.addresses)
-            group.addresses = pydash.uniq(group.addresses)
+            group.process_addresses(self.addresses)
 
         # load default rpc nodes
         if Network.BTC not in self.nodes:
@@ -149,3 +153,7 @@ def get_proxies(proxies_url: str) -> list[str]:
         return pydash.uniq(proxies)
     except Exception as err:
         fatal(f"Can't get  proxies: {err}")
+
+
+def get_address_group_by_name(address_groups: list[Config.AddressGroup], name: str) -> Config.AddressGroup | None:
+    return pydash.find(address_groups, lambda g: g.name == name)

@@ -31,6 +31,7 @@ class Balances(BaseModel):
             raise ValueError
 
     def get_group_balances(self, group_index: int, network: Network) -> list[Balance]:
+        # TODO: can we get network by group_index?
         if network == Network.BTC:
             network_balances = self.btc
         elif network == Network.ETH:

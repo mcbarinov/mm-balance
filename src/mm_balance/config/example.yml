@@ -36,12 +36,12 @@ addresses:
       0xf977814e90da44bfa03b6295a0616a897441acec
       0x47ac0fb4f2d84898e4d9e7b4dab3c24507a6d503
 
-# Optional settings:
+##Optional settings:
 #proxies_url: https://site.com/api/proxies # get proxies from this url
 #proxies:
-#  - http://123.123.123.121
-#  - http://123.123.123.122
-#  - http://123.123.123.123
-#  - http://123.123.123.124
+#- http://123.123.123.121
+#- http://123.123.123.122
+#- http://123.123.123.123
+#- http://123.123.123.124
 #round_ndigits: 4
-#price: yes
+#price: no

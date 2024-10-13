@@ -3,12 +3,14 @@ from __future__ import annotations
 from enum import Enum, unique
 
 DEFAULT_ETH_NODES = ["https://ethereum.publicnode.com", "https://rpc.ankr.com/eth"]
+DEFAULT_SOL_NODES = ["https://api.mainnet-beta.solana.com"]
 
 
 @unique
 class Coin(str, Enum):
     BTC = "BTC"
     ETH = "ETH"
+    SOL = "SOL"
     USDT = "USDT"
     USDC = "USDC"
 
@@ -21,6 +23,7 @@ class Coin(str, Enum):
 class Network(str, Enum):
     BTC = "btc"
     ETH = "eth"
+    SOL = "sol"
 
 
 @unique

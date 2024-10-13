@@ -37,7 +37,7 @@ def get_asset_price(coingecko_asset_id: str, proxies: list[str]) -> Result[Decim
         data = res.to_dict()
         if res.json and coingecko_asset_id in coingecko_asset_id in res.json:
             return Ok(Decimal(pydash.get(res.json, f"{coingecko_asset_id}.usd")))
-    return Err("error", data=data)
+    return Err(f"error: can't get get_asset_price for {coingecko_asset_id}", data=data)
 
 
 def coingecko_id(group: Config.Group) -> str:
@@ -51,5 +51,7 @@ def coingecko_id(group: Config.Group) -> str:
         return "tether"
     elif group.coin.lower() == "usdc" or (group.token_address is not None and group.token_address == EthTokenAddress.USDC):
         return "usd-coin"
+    elif group.coin.lower() == "sol":
+        return "solana"
 
     raise ValueError(f"can't get coingecko_id for {group.coin}")

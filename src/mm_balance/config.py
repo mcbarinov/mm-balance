@@ -7,7 +7,7 @@ import pydash
 from mm_std import BaseConfig, Err, PrintFormat, fatal, hr
 from pydantic import Field, field_validator, model_validator
 
-from mm_balance.types import DEFAULT_ETH_NODES, EthTokenAddress, Network
+from mm_balance.types import DEFAULT_ETH_NODES, DEFAULT_SOL_NODES, EthTokenAddress, Network
 
 
 class Config(BaseConfig):
@@ -70,6 +70,7 @@ class Config(BaseConfig):
     class Workers(BaseConfig):
         btc: int = 5
         eth: int = 5
+        sol: int = 5
 
     class TokenDecimals(BaseConfig):
         eth: dict[str, int] = Field(default_factory=dict)
@@ -94,6 +95,9 @@ class Config(BaseConfig):
     def eth_groups(self) -> list[Group]:
         return [g for g in self.groups if g.network == Network.ETH]
 
+    def sol_groups(self) -> list[Group]:
+        return [g for g in self.groups if g.network == Network.SOL]
+
     def has_sum_share(self) -> bool:
         return any(g.share != Decimal(1) for g in self.groups)
 
@@ -112,6 +116,8 @@ class Config(BaseConfig):
             self.nodes[Network.BTC] = []
         if Network.ETH not in self.nodes:
             self.nodes[Network.ETH] = DEFAULT_ETH_NODES
+        if Network.SOL not in self.nodes:
+            self.nodes[Network.SOL] = DEFAULT_SOL_NODES
 
         # load token decimals
         for group in self.groups:
@@ -132,6 +138,8 @@ def detect_network(coin: str) -> Network:
         return Network.BTC
     if coin == "eth":
         return Network.ETH
+    if coin == "sol":
+        return Network.SOL
     return Network.ETH
     # raise ValueError(f"can't get network for the coin: {coin}")
 

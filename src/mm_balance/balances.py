@@ -5,7 +5,7 @@ from decimal import Decimal
 from mm_std import ConcurrentTasks, Result
 from pydantic import BaseModel
 
-from mm_balance import btc, eth
+from mm_balance import btc, eth, solana
 from mm_balance.config import Config
 from mm_balance.types import Network
 
@@ -21,12 +21,15 @@ class Balances(BaseModel):
     # separate balance tasks on networks
     btc: list[Balance]
     eth: list[Balance]
+    sol: list[Balance]
 
     def network_tasks(self, network: Network) -> list[Balance]:
         if network == Network.BTC:
             return self.btc
         elif network == Network.ETH:
             return self.eth
+        elif network == Network.SOL:
+            return self.sol
         else:
             raise ValueError
 
@@ -36,6 +39,8 @@ class Balances(BaseModel):
             network_balances = self.btc
         elif network == Network.ETH:
             network_balances = self.eth
+        elif network == Network.SOL:
+            network_balances = self.sol
         else:
             raise ValueError
 
@@ -45,6 +50,7 @@ class Balances(BaseModel):
         job = ConcurrentTasks()
         job.add_task("btc", self._process_btc)
         job.add_task("eth", self._process_eth)
+        job.add_task("sol", self._process_sol)
         job.execute()
 
     def _process_btc(self) -> None:
@@ -63,13 +69,23 @@ class Balances(BaseModel):
         for idx, _task in enumerate(self.eth):
             self.eth[idx].balance = job.result.get(str(idx))  # type: ignore[assignment]
 
+    def _process_sol(self) -> None:
+        job = ConcurrentTasks(max_workers=self.config.workers.sol)
+        for idx, task in enumerate(self.sol):
+            job.add_task(str(idx), solana.get_balance, args=(task.address, self.config))
+        job.execute()
+        for idx, _task in enumerate(self.sol):
+            self.sol[idx].balance = job.result.get(str(idx))  # type: ignore[assignment]
+
     @staticmethod
     def from_config(config: Config) -> Balances:
-        tasks = Balances(config=config, btc=[], eth=[])
+        tasks = Balances(config=config, btc=[], eth=[], sol=[])
         for idx, group in enumerate(config.groups):
             task_list = [Balances.Balance(group_index=idx, address=a, token_address=group.token_address) for a in group.addresses]
             if group.network == Network.BTC:
                 tasks.btc.extend(task_list)
             elif group.network == Network.ETH:
                 tasks.eth.extend(task_list)
+            elif group.network == Network.SOL:
+                tasks.sol.extend(task_list)
         return tasks

@@ -1,4 +1,16 @@
 groups:
+  - coin: sol
+    addresses:
+      - 2ojv9BAiHUrvsm9gxDe7fJSzbNZSJcxZvf8dqmWGHG8S # binance
+
+  - coin: btc
+    comment: coldwallets
+    addresses: |
+      34xp4vRoCGJym3xR7yCVPFHoCNxv4Twseo # binance
+      bc1qgdjqv0av3q56jvd82tkdjpy7gdp9ut8tlqmgrpmv24sq90ecnvqqjwvw97 # bitfinex
+      bc1ql49ydapnjafl5t2cp9zqpjwe6pdgmxy98859v2 # robinhood
+    share: 0.1 # 10%
+
   - coin: eth
     comment: okx
     addresses: okx_eth
@@ -6,14 +18,6 @@ groups:
   - coin: usdt
     comment: okx
     addresses: okx_eth
-
-  - coin: btc
-    comment: coldwallets
-    addresses: |
-      34xp4vRoCGJym3xR7yCVPFHoCNxv4Twseo # Binance coldwallet
-      bc1qgdjqv0av3q56jvd82tkdjpy7gdp9ut8tlqmgrpmv24sq90ecnvqqjwvw97 # Bitfinex coldwallet
-      bc1ql49ydapnjafl5t2cp9zqpjwe6pdgmxy98859v2 # Robinhood
-    share: 0.1 # 10%
 
   - coin: eth
     comment: binance

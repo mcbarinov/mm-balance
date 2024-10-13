@@ -5,6 +5,7 @@ import pydash
 from mm_std import Err, Ok, Result, fatal, hr
 from mm_std.random_ import random_str_choice
 
+from mm_balance import output
 from mm_balance.config import Config
 from mm_balance.types import EthTokenAddress, Network
 
@@ -20,17 +21,25 @@ class Prices(dict[str, Decimal]):
 
 def get_prices(config: Config) -> Prices:
     result = Prices()
-    for group in config.groups:
-        if group.coin in result:
-            continue
+    coins_total = len(pydash.uniq([group.coin for group in config.groups]))
 
-        coingecko_id = get_coingecko_id(group)
-        res = get_asset_price(coingecko_id, config.proxies)
-        if isinstance(res, Ok):
-            result[group.coin] = res.ok
-        else:
-            fatal(res.err)
-            # raise ValueError(res.err)
+    progress = output.create_progress_bar()
+
+    with progress:
+        task_id = output.create_progress_task(progress, "prices", total=coins_total)
+
+        for group in config.groups:
+            if group.coin in result:
+                continue
+
+            coingecko_id = get_coingecko_id(group)
+            res = get_asset_price(coingecko_id, config.proxies)
+            if isinstance(res, Ok):
+                result[group.coin] = res.ok
+                progress.update(task_id, advance=1)
+            else:
+                fatal(res.err)
+                # raise ValueError(res.err)
 
     return result
 

@@ -122,7 +122,7 @@ class Config(BaseConfig):
         # load token decimals
         for group in self.groups:
             if group.network == Network.ETH and group.token_address is not None:
-                from mm_balance import eth
+                from mm_balance.rpc import eth
 
                 decimals_res = eth.get_token_decimals(group.token_address, self)
                 if isinstance(decimals_res, Err):

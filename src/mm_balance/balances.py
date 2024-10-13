@@ -4,9 +4,11 @@ from decimal import Decimal
 
 from mm_std import ConcurrentTasks, Result
 from pydantic import BaseModel
+from rich.progress import Progress, TaskID
 
-from mm_balance import btc, eth, solana
+from mm_balance import output
 from mm_balance.config import Config
+from mm_balance.rpc import btc, eth, solana
 from mm_balance.types import Network
 
 
@@ -47,32 +49,37 @@ class Balances(BaseModel):
         return [b for b in network_balances if b.group_index == group_index]
 
     def process(self) -> None:
-        job = ConcurrentTasks()
-        job.add_task("btc", self._process_btc)
-        job.add_task("eth", self._process_eth)
-        job.add_task("sol", self._process_sol)
-        job.execute()
+        progress = output.create_progress_bar()
+        task_btc = output.create_progress_task(progress, "btc", len(self.btc))
+        task_eth = output.create_progress_task(progress, "eth", len(self.eth))
+        task_sol = output.create_progress_task(progress, "sol", len(self.sol))
+        with progress:
+            job = ConcurrentTasks()
+            job.add_task("btc", self._process_btc, args=(progress, task_btc))
+            job.add_task("eth", self._process_eth, args=(progress, task_eth))
+            job.add_task("sol", self._process_sol, args=(progress, task_sol))
+            job.execute()
 
-    def _process_btc(self) -> None:
+    def _process_btc(self, progress: Progress, task_id: TaskID) -> None:
         job = ConcurrentTasks(max_workers=self.config.workers.btc)
         for idx, task in enumerate(self.btc):
-            job.add_task(str(idx), btc.get_balance, args=(task.address, self.config))
+            job.add_task(str(idx), btc.get_balance, args=(task.address, self.config, progress, task_id))
         job.execute()
         for idx, _task in enumerate(self.btc):
             self.btc[idx].balance = job.result.get(str(idx))  # type: ignore[assignment]
 
-    def _process_eth(self) -> None:
+    def _process_eth(self, progress: Progress, task_id: TaskID) -> None:
         job = ConcurrentTasks(max_workers=self.config.workers.eth)
         for idx, task in enumerate(self.eth):
-            job.add_task(str(idx), eth.get_balance, args=(task.address, task.token_address, self.config))
+            job.add_task(str(idx), eth.get_balance, args=(task.address, task.token_address, self.config, progress, task_id))
         job.execute()
         for idx, _task in enumerate(self.eth):
             self.eth[idx].balance = job.result.get(str(idx))  # type: ignore[assignment]
 
-    def _process_sol(self) -> None:
+    def _process_sol(self, progress: Progress, task_id: TaskID) -> None:
         job = ConcurrentTasks(max_workers=self.config.workers.sol)
         for idx, task in enumerate(self.sol):
-            job.add_task(str(idx), solana.get_balance, args=(task.address, self.config))
+            job.add_task(str(idx), solana.get_balance, args=(task.address, self.config, progress, task_id))
         job.execute()
         for idx, _task in enumerate(self.sol):
             self.sol[idx].balance = job.result.get(str(idx))  # type: ignore[assignment]

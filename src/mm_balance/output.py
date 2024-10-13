@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from mm_std import Ok, print_table
+from rich.progress import BarColumn, MofNCompleteColumn, Progress, TaskID, TextColumn
 
 from mm_balance.balances import Balances
 from mm_balance.config import Config
@@ -54,3 +55,15 @@ def print_prices(config: Config, prices: Prices) -> None:
 def print_total(config: Config, balances: Balances, prices: Prices) -> None:
     total = Total.calc(balances, prices, config)
     total.print()
+
+
+def create_progress_bar() -> Progress:
+    return Progress(
+        TextColumn("[progress.description]{task.description}"),
+        BarColumn(),
+        MofNCompleteColumn(),
+    )
+
+
+def create_progress_task(progress: Progress, description: str, total: int) -> TaskID:
+    return progress.add_task("[green]" + description, total=total)

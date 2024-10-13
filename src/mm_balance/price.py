@@ -1,3 +1,4 @@
+import time
 from decimal import Decimal
 
 import pydash
@@ -20,27 +21,43 @@ class Prices(dict[str, Decimal]):
 def get_prices(config: Config) -> Prices:
     result = Prices()
     for group in config.groups:
-        res = get_asset_price(coingecko_id(group), config.proxies)
+        if group.coin in result:
+            continue
+
+        coingecko_id = get_coingecko_id(group)
+        res = get_asset_price(coingecko_id, config.proxies)
         if isinstance(res, Ok):
             result[group.coin] = res.ok
         else:
             fatal(res.err)
             # raise ValueError(res.err)
+
     return result
 
 
 def get_asset_price(coingecko_asset_id: str, proxies: list[str]) -> Result[Decimal]:
     url = f"https://api.coingecko.com/api/v3/simple/price?ids={coingecko_asset_id}&vs_currencies=usd"
     data = None
+    error = f"error: can't get price for {coingecko_asset_id} from coingecko"
     for _ in range(3):
         res = hr(url, proxy=random_str_choice(proxies))
+
+        # Check for Rate Limit
+        if res.code == 429:
+            error = f"error: can't get price for {coingecko_asset_id} from coingecko. You've exceeded the Rate Limit. Please add more proxies."  # noqa: E501
+            if not proxies:
+                fatal(error)  # Exit immidiately if no proxies are provided
+
         data = res.to_dict()
         if res.json and coingecko_asset_id in coingecko_asset_id in res.json:
             return Ok(Decimal(pydash.get(res.json, f"{coingecko_asset_id}.usd")))
-    return Err(f"error: can't get get_asset_price for {coingecko_asset_id}", data=data)
+
+        if not proxies:
+            time.sleep(10)
+    return Err(error, data=data)
 
 
-def coingecko_id(group: Config.Group) -> str:
+def get_coingecko_id(group: Config.Group) -> str:
     if group.coingecko_id:
         return group.coingecko_id
     elif group.network is Network.BTC:

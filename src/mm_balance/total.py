@@ -67,10 +67,14 @@ class Total:
         if self.config.print_format == PrintFormat.TABLE:
             if self.config.price:
                 self._print_total_total_with_price()
-                self._print_share_total_with_price()
+
+                if self.config.has_share():
+                    self._print_share_total_with_price()
             else:
                 self._print_total_total_without_price()
-                self._print_share_total_without_price()
+
+                if self.config.has_share():
+                    self._print_share_total_without_price()
 
     def _print_total_total_with_price(self) -> None:
         if self.config.print_format == PrintFormat.TABLE:
@@ -81,16 +85,16 @@ class Total:
                     usd_share = round(self.stablecoin_sum * 100 / self.usd_sum, self.config.round_ndigits)
                 else:
                     usd_share = round(usd_value * 100 / self.usd_sum, self.config.round_ndigits)
-                rows.append([key, value, usd_value, usd_share])
-            rows.append(["usd_sum", self.usd_sum])
-            print_table("total", ["coin", "balance", "usd", "usd_share"], rows)
+                rows.append([key, value, f"${usd_value}", f"{usd_share}%"])
+            rows.append(["usd_sum", f"${self.usd_sum}"])
+            print_table("Total", ["coin", "balance", "usd", "usd_share"], rows)
 
     def _print_total_total_without_price(self) -> None:
         if self.config.print_format == PrintFormat.TABLE:
             rows = []
             for key, value in self.coins.items():
                 rows.append([key, value])
-            print_table("total", ["coin", "balance"], rows)
+            print_table("Total", ["coin", "balance"], rows)
 
     def _print_share_total_with_price(self) -> None:
         rows = []
@@ -100,12 +104,12 @@ class Total:
                 usd_share = round(self.stablecoin_sum_share * 100 / self.usd_sum_share, self.config.round_ndigits)
             else:
                 usd_share = round(usd_value * 100 / self.usd_sum_share, self.config.round_ndigits)
-            rows.append([key, self.coins_share[key], usd_value, usd_share])
-        rows.append(["usd_sum", self.usd_sum_share])
-        print_table("total / share", ["coin", "balance", "usd", "usd_share"], rows)
+            rows.append([key, self.coins_share[key], f"${usd_value}", f"{usd_share}%"])
+        rows.append(["usd_sum", f"${self.usd_sum_share}"])
+        print_table("Total, share", ["coin", "balance", "usd", "usd_share"], rows)
 
     def _print_share_total_without_price(self) -> None:
         rows = []
         for key, _ in self.coins.items():
             rows.append([key, self.coins_share[key]])
-        print_table("total / share", ["coin", "balance"], rows)
+        print_table("Total, share", ["coin", "balance"], rows)

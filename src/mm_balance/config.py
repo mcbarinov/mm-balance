@@ -98,7 +98,7 @@ class Config(BaseConfig):
     def sol_groups(self) -> list[Group]:
         return [g for g in self.groups if g.network == Network.SOL]
 
-    def has_sum_share(self) -> bool:
+    def has_share(self) -> bool:
         return any(g.share != Decimal(1) for g in self.groups)
 
     @model_validator(mode="after")

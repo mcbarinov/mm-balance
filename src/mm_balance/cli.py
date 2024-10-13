@@ -34,8 +34,8 @@ def cli(
     balances = Balances.from_config(config)
     balances.process()
 
-    output.print_groups(balances, config, prices)
     output.print_prices(config, prices)
+    output.print_groups(balances, config, prices)
     output.print_total(config, balances, prices)
 
 

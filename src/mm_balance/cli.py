@@ -32,11 +32,12 @@ def cli(
     config = Config.read_config(config_path, zip_password=zip_password)
 
     prices = get_prices(config) if config.price else Prices()
+    output.print_prices(config, prices)
+
     token_decimals = get_token_decimals(config)
     balances = Balances(config, token_decimals)
     balances.process()
 
-    output.print_prices(config, prices)
     output.print_groups(balances, config, prices)
     output.print_total(config, balances, prices)
 

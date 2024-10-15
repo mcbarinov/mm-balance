@@ -1,4 +1,4 @@
-groups:
+coins:
   - coin: sol
     addresses:
       - 2ojv9BAiHUrvsm9gxDe7fJSzbNZSJcxZvf8dqmWGHG8S # binance
@@ -53,4 +53,4 @@ addresses:
 #- http://123.123.123.123
 #- http://123.123.123.124
 #round_ndigits: 4
-#price: no
+#price: yes

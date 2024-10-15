@@ -4,7 +4,7 @@ import pydash
 from mm_std import fatal, hr
 from mm_std.random_ import random_str_choice
 
-from mm_balance.config import Config
+from mm_balance.config import Config, Group
 from mm_balance.constants import RETRIES_COINGECKO_PRICES, EthTokenAddress, Network
 
 
@@ -38,7 +38,7 @@ def get_prices(config: Config) -> Prices:
     return result
 
 
-def get_coingecko_id(group: Config.Group) -> str:
+def get_coingecko_id(group: Group) -> str:
     if group.coingecko_id:
         return group.coingecko_id
     elif group.network is Network.BTC:

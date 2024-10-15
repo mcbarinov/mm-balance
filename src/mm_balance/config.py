@@ -10,64 +10,66 @@ from pydantic import Field, field_validator, model_validator
 from mm_balance.constants import DEFAULT_ETH_NODES, DEFAULT_SOL_NODES, EthTokenAddress, Network, SolTokenAddress
 
 
+class Group(BaseConfig):
+    comment: str = ""
+    coin: str
+    network: Network
+    token_address: str | None = None
+    coingecko_id: str | None = None
+    addresses: list[str] = Field(default_factory=list)
+    share: Decimal = Decimal(1)
+
+    @property
+    def name(self) -> str:
+        result = self.coin
+        if self.comment:
+            result += " / " + self.comment
+        return result
+
+    @field_validator("coin", mode="after")
+    def coin_validator(cls, v: str) -> str:
+        return v.upper()
+
+    @field_validator("addresses", mode="before")
+    def to_list_validator(cls, v: str | list[str] | None) -> list[str]:
+        return cls.to_list_str_validator(v, unique=True, remove_comments=True, split_line=True)
+
+    @model_validator(mode="before")
+    def before_all(cls, data: Any) -> Any:
+        if "network" not in data:
+            data["network"] = detect_network(data["coin"])
+        return data
+
+    @model_validator(mode="after")
+    def final_validator(self) -> Self:
+        if self.token_address is None:
+            self.token_address = detect_token_address(self.coin, self.network)
+        if self.token_address is not None and self.network is Network.ETH:
+            self.token_address = self.token_address.lower()
+        return self
+
+    def process_addresses(self, address_groups: list[AddressGroup]) -> None:
+        addresses: list[str] = []
+        for address in self.addresses:
+            if address_group := pydash.find(address_groups, lambda g: g.name == address):  # noqa: B023
+                addresses.extend(address_group.addresses)
+            else:
+                # TODO: check address is valid
+                addresses.append(address)
+        self.addresses = addresses
+
+
+class AddressGroup(BaseConfig):
+    name: str
+    addresses: list[str]
+
+    @field_validator("addresses", mode="before")
+    def to_list_validator(cls, v: str | list[str] | None) -> list[str]:
+        return cls.to_list_str_validator(v, unique=True, remove_comments=True, split_line=True)
+
+
 class Config(BaseConfig):
-    class Group(BaseConfig):
-        comment: str = ""
-        coin: str
-        network: Network
-        token_address: str | None = None
-        coingecko_id: str | None = None
-        addresses: list[str] = Field(default_factory=list)
-        share: Decimal = Decimal(1)
-
-        @property
-        def name(self) -> str:
-            result = self.coin
-            if self.comment:
-                result += " / " + self.comment
-            return result
-
-        @field_validator("coin", mode="after")
-        def coin_validator(cls, v: str) -> str:
-            return v.upper()
-
-        @field_validator("addresses", mode="before")
-        def to_list_validator(cls, v: str | list[str] | None) -> list[str]:
-            return cls.to_list_str_validator(v, unique=True, remove_comments=True, split_line=True)
-
-        @model_validator(mode="before")
-        def before_all(cls, data: Any) -> Any:
-            if "network" not in data:
-                data["network"] = detect_network(data["coin"])
-            return data
-
-        @model_validator(mode="after")
-        def final_validator(self) -> Self:
-            if self.token_address is None:
-                self.token_address = detect_token_address(self.coin, self.network)
-            if self.token_address is not None and self.network is Network.ETH:
-                self.token_address = self.token_address.lower()
-            return self
-
-        def process_addresses(self, address_groups: list[Config.AddressGroup]) -> None:
-            addresses: list[str] = []
-            for address in self.addresses:
-                if address_group := pydash.find(address_groups, lambda g: g.name == address):  # noqa: B023
-                    addresses.extend(address_group.addresses)
-                else:
-                    # TODO: check address is valid
-                    addresses.append(address)
-            self.addresses = addresses
-
-    class AddressGroup(BaseConfig):
-        name: str
-        addresses: list[str]
-
-        @field_validator("addresses", mode="before")
-        def to_list_validator(cls, v: str | list[str] | None) -> list[str]:
-            return cls.to_list_str_validator(v, unique=True, remove_comments=True, split_line=True)
-
-    groups: list[Group]
+    groups: list[Group] = Field(alias="coins")
     addresses: list[AddressGroup] = Field(default_factory=list)
 
     proxies_url: str | None = None
@@ -78,15 +80,6 @@ class Config(BaseConfig):
     price: bool = True
 
     workers: dict[Network, int] = {network: 5 for network in Network}
-
-    def btc_groups(self) -> list[Group]:
-        return [g for g in self.groups if g.network == Network.BTC]
-
-    def eth_groups(self) -> list[Group]:
-        return [g for g in self.groups if g.network == Network.ETH]
-
-    def sol_groups(self) -> list[Group]:
-        return [g for g in self.groups if g.network == Network.SOL]
 
     def has_share(self) -> bool:
         return any(g.share != Decimal(1) for g in self.groups)
@@ -121,7 +114,7 @@ def detect_network(coin: str) -> Network:
     if coin == "sol":
         return Network.SOL
     return Network.ETH
-    # raise ValueError(f"can't get network for the coin: {coin}")
+    # TODO: raise ValueError(f"can't get network for the coin: {coin}")
 
 
 def detect_token_address(coin: str, network: str) -> str | None:
@@ -149,5 +142,5 @@ def get_proxies(proxies_url: str) -> list[str]:
         fatal(f"Can't get  proxies: {err}")
 
 
-def get_address_group_by_name(address_groups: list[Config.AddressGroup], name: str) -> Config.AddressGroup | None:
+def get_address_group_by_name(address_groups: list[AddressGroup], name: str) -> AddressGroup | None:
     return pydash.find(address_groups, lambda g: g.name == name)

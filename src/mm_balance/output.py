@@ -4,7 +4,7 @@ from mm_std import Ok, print_table
 from rich.progress import BarColumn, MofNCompleteColumn, Progress, TaskID, TextColumn
 
 from mm_balance.balances import Balances
-from mm_balance.config import Config
+from mm_balance.config import Config, Group
 from mm_balance.price import Prices
 from mm_balance.total import Total
 
@@ -15,7 +15,7 @@ def print_groups(balances: Balances, config: Config, prices: Prices) -> None:
         _print_group(group, group_balances, config, prices)
 
 
-def _print_group(group: Config.Group, group_balances: list[Balances.Balance], config: Config, prices: Prices) -> None:
+def _print_group(group: Group, group_balances: list[Balances.Balance], config: Config, prices: Prices) -> None:
     rows = []
     balance_sum = Decimal(0)
     usd_sum = Decimal(0)

@@ -9,6 +9,7 @@ from mm_balance import output
 from mm_balance.balances import Balances
 from mm_balance.config import Config
 from mm_balance.price import Prices, get_prices
+from mm_balance.token_decimals import get_token_decimals
 
 app = typer.Typer(no_args_is_help=True, pretty_exceptions_enable=False, add_completion=False)
 
@@ -31,7 +32,8 @@ def cli(
     config = Config.read_config(config_path, zip_password=zip_password)
 
     prices = get_prices(config) if config.price else Prices()
-    balances = Balances.from_config(config)
+    token_decimals = get_token_decimals(config)
+    balances = Balances(config, token_decimals)
     balances.process()
 
     output.print_prices(config, prices)

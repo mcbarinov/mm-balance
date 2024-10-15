@@ -15,7 +15,6 @@ from mm_balance.types import Coin
 class Total:
     coins: dict[str, Decimal]
     coins_share: dict[str, Decimal]
-    # usd_share: dict[str, Decimal]  # all stablecoins have key 'usd'
     usd_sum: Decimal  # sum of all coins in USD
     usd_sum_share: Decimal
 
@@ -29,7 +28,6 @@ class Total:
     def calc(cls, balances: Balances, prices: Prices, config: Config) -> Self:
         coins: dict[str, Decimal] = defaultdict(Decimal)
         coins_share: dict[str, Decimal] = defaultdict(Decimal)
-        # usd_share: dict[str, Decimal] = defaultdict(Decimal)
         usd_sum = Decimal(0)
         usd_sum_share = Decimal(0)
 
@@ -37,7 +35,6 @@ class Total:
         stablecoin_sum_share = Decimal(0)
         for group_index, group in enumerate(config.groups):
             balance_sum = Decimal(0)
-            # for address_task in [t for t in tasks.network_tasks(group.network) if t.group_index == group_index]:
             for address_task in balances.get_group_balances(group_index, group.network):
                 if isinstance(address_task.balance, Ok):
                     balance_sum += address_task.balance.ok

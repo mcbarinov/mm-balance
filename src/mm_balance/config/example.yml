@@ -3,6 +3,11 @@ groups:
     addresses:
       - 2ojv9BAiHUrvsm9gxDe7fJSzbNZSJcxZvf8dqmWGHG8S # binance
 
+  - coin: usdt
+    network: sol
+    addresses:
+      - 2ojv9BAiHUrvsm9gxDe7fJSzbNZSJcxZvf8dqmWGHG8S # binance
+
   - coin: btc
     comment: coldwallets
     addresses: |

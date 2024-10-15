@@ -1,19 +1,22 @@
 from decimal import Decimal
 
-from mm_solana.balance import sol_balance
+from mm_solana import balance, token
 from mm_std import Ok, Result
-from rich.progress import Progress, TaskID
-
-from mm_balance.config import Config
-from mm_balance.types import Network
 
 
-def get_balance(address: str, config: Config, progress: Progress | None = None, task_id: TaskID | None = None) -> Result[Decimal]:
-    res: Result[Decimal] = sol_balance(
-        address=address, nodes=config.nodes[Network.SOL], proxies=config.proxies, attempts=5, timeout=10
-    ).and_then(
-        lambda b: Ok(round(Decimal(b / 1_000_000_000), config.round_ndigits)),
+def get_native_balance(nodes: list[str], address: str, proxies: list[str], round_ndigits: int) -> Result[Decimal]:
+    return balance.get_balance_with_retries(nodes, address, retries=5, timeout=5, proxies=proxies).and_then(
+        lambda b: Ok(round(Decimal(b / 1_000_000_000), round_ndigits)),
     )
-    if task_id is not None and progress is not None:
-        progress.update(task_id, advance=1)
-    return res
+
+
+def get_token_balance(
+    nodes: list[str], wallet_address: str, token_address: str, decimals: int, proxies: list[str], round_ndigits: int
+) -> Result[Decimal]:
+    return token.get_balance_with_retries(nodes, wallet_address, token_address, retries=5, timeout=5, proxies=proxies).and_then(
+        lambda b: Ok(round(Decimal(b / 10**decimals), round_ndigits))
+    )
+
+
+def get_token_decimals(nodes: list[str], token_address: str, proxies: list[str]) -> Result[int]:
+    return token.get_decimals_with_retries(nodes, token_address, retries=5, timeout=5, proxies=proxies)

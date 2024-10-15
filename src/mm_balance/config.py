@@ -4,10 +4,10 @@ from decimal import Decimal
 from typing import Any, Self
 
 import pydash
-from mm_std import BaseConfig, Err, PrintFormat, fatal, hr
+from mm_std import BaseConfig, PrintFormat, fatal, hr
 from pydantic import Field, field_validator, model_validator
 
-from mm_balance.types import DEFAULT_ETH_NODES, DEFAULT_SOL_NODES, EthTokenAddress, Network
+from mm_balance.types import DEFAULT_ETH_NODES, DEFAULT_SOL_NODES, EthTokenAddress, Network, SolTokenAddress
 
 
 class Config(BaseConfig):
@@ -67,14 +67,6 @@ class Config(BaseConfig):
         def to_list_validator(cls, v: str | list[str] | None) -> list[str]:
             return cls.to_list_str_validator(v, unique=True, remove_comments=True, split_line=True)
 
-    class Workers(BaseConfig):
-        btc: int = 5
-        eth: int = 5
-        sol: int = 5
-
-    class TokenDecimals(BaseConfig):
-        eth: dict[str, int] = Field(default_factory=dict)
-
     groups: list[Group]
     addresses: list[AddressGroup] = Field(default_factory=list)
 
@@ -85,9 +77,7 @@ class Config(BaseConfig):
     print_format: PrintFormat = PrintFormat.TABLE
     price: bool = True
 
-    # non configs
-    workers: Workers = Workers()
-    token_decimals: TokenDecimals = TokenDecimals()
+    workers: dict[Network, int] = {network: 5 for network in Network}
 
     def btc_groups(self) -> list[Group]:
         return [g for g in self.groups if g.network == Network.BTC]
@@ -119,16 +109,6 @@ class Config(BaseConfig):
         if Network.SOL not in self.nodes:
             self.nodes[Network.SOL] = DEFAULT_SOL_NODES
 
-        # load token decimals
-        for group in self.groups:
-            if group.network == Network.ETH and group.token_address is not None:
-                from mm_balance.rpc import eth
-
-                decimals_res = eth.get_token_decimals(group.token_address, self)
-                if isinstance(decimals_res, Err):
-                    fatal(f"can't get decimals for token {group.coin} / {group.token_address}, error={decimals_res.err}")
-                self.token_decimals.eth[group.token_address] = decimals_res.ok
-
         return self
 
 
@@ -150,6 +130,12 @@ def detect_token_address(coin: str, network: str) -> str | None:
             return EthTokenAddress.USDT
         if coin.lower() == "usdc":
             return EthTokenAddress.USDC
+
+    if network == Network.SOL.lower():
+        if coin.lower() == "usdt":
+            return SolTokenAddress.USDT
+        if coin.lower() == "usdc":
+            return SolTokenAddress.USDC
 
 
 def get_proxies(proxies_url: str) -> list[str]:

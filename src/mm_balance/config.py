@@ -7,7 +7,7 @@ import pydash
 from mm_std import BaseConfig, PrintFormat, fatal, hr
 from pydantic import Field, field_validator, model_validator
 
-from mm_balance.types import DEFAULT_ETH_NODES, DEFAULT_SOL_NODES, EthTokenAddress, Network, SolTokenAddress
+from mm_balance.constants import DEFAULT_ETH_NODES, DEFAULT_SOL_NODES, EthTokenAddress, Network, SolTokenAddress
 
 
 class Config(BaseConfig):

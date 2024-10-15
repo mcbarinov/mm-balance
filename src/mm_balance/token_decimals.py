@@ -1,8 +1,8 @@
 from mm_std import Err, fatal
 
 from mm_balance.config import Config
+from mm_balance.constants import Network
 from mm_balance.rpc import eth, solana
-from mm_balance.types import Network
 
 
 class TokenDecimals(dict[Network, dict[str, int]]):

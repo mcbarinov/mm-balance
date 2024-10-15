@@ -8,9 +8,9 @@ from rich.progress import TaskID
 
 from mm_balance import output
 from mm_balance.config import Config
+from mm_balance.constants import Network
 from mm_balance.rpc import btc, eth, solana
 from mm_balance.token_decimals import TokenDecimals
-from mm_balance.types import Network
 
 
 class Balances:
@@ -58,7 +58,7 @@ class Balances:
         token_decimals = self.token_decimals[network][token_address] if token_address else -1
         match network:
             case Network.BTC:
-                res = btc.get_balance(wallet_address, self.config)
+                res = btc.get_balance(wallet_address, proxies, round_ndigits)
             case Network.ETH:
                 if token_address is None:
                     res = eth.get_native_balance(nodes, wallet_address, proxies, round_ndigits)

@@ -5,7 +5,7 @@ from mm_std import fatal, hr
 from mm_std.random_ import random_str_choice
 
 from mm_balance.config import Config
-from mm_balance.types import EthTokenAddress, Network
+from mm_balance.constants import RETRIES_COINGECKO_PRICES, EthTokenAddress, Network
 
 
 class Prices(dict[str, Decimal]):
@@ -24,7 +24,7 @@ def get_prices(config: Config) -> Prices:
     coingecko_ids = pydash.uniq([get_coingecko_id(group) for group in config.groups])
 
     url = f"https://api.coingecko.com/api/v3/simple/price?ids={",".join(coingecko_ids)}&vs_currencies=usd"
-    for _ in range(3):
+    for _ in range(RETRIES_COINGECKO_PRICES):
         res = hr(url, proxy=random_str_choice(config.proxies))
         if res.code != 200:
             continue

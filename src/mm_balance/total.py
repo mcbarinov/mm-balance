@@ -7,8 +7,8 @@ from mm_std import Ok, PrintFormat, print_table
 
 from mm_balance.balances import Balances
 from mm_balance.config import Config
+from mm_balance.constants import Coin
 from mm_balance.price import Prices
-from mm_balance.types import Coin
 
 
 @dataclass

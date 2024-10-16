@@ -925,7 +925,7 @@ wheels = [
 
 [[package]]
 name = "mm-balance"
-version = "0.1.11"
+version = "0.1.12"
 source = { editable = "." }
 dependencies = [
     { name = "mm-btc" },

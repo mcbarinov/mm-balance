@@ -8,6 +8,7 @@ import typer
 from mm_balance import output
 from mm_balance.balances import Balances
 from mm_balance.config import Config
+from mm_balance.constants import Network
 from mm_balance.price import Prices, get_prices
 from mm_balance.token_decimals import get_token_decimals
 
@@ -21,10 +22,20 @@ def example_callback(value: bool) -> None:
         raise typer.Exit
 
 
+def networks_callback(value: bool) -> None:
+    if value:
+        for network in Network:
+            typer.echo(network)
+        raise typer.Exit
+
+
 @app.command()
 def cli(
     config_path: Annotated[pathlib.Path, typer.Argument()],
     _example: Annotated[bool | None, typer.Option("--example", callback=example_callback, help="Print a config example.")] = None,
+    _networks: Annotated[
+        bool | None, typer.Option("--networks", callback=networks_callback, help="Print supported networks.")
+    ] = None,
 ) -> None:
     zip_password = ""  # nosec
     if config_path.name.endswith(".zip"):

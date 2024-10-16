@@ -11,10 +11,10 @@ TIMEOUT_DECIMALS = 5
 
 @unique
 class Network(str, Enum):
+    ARBITRUM_ONE = "arbitrum-one"
     BITCOIN = "bitcoin"
     ETHEREUM = "ethereum"
     SOLANA = "solana"
-    ARBITRUM_ONE = "arbitrum-one"
     OP_MAINNET = "op-mainnet"  # Optimism mainnet
 
 
@@ -27,6 +27,7 @@ TOKEN_ADDRESS: dict[Network, dict[str, str]] = {
         "USDT": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
         "USDC": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
     },
+    # TODO: Add for Arbitrum and Optimism, usdt + usdc
 }
 
 TICKER_TO_COINGECKO_ID = {

@@ -10,19 +10,29 @@ TIMEOUT_DECIMALS = 5
 
 
 @unique
-class EthTokenAddress(str, Enum):
-    USDT = "0xdac17f958d2ee523a2206206994597c13d831ec7"
-    USDC = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+class Network(str, Enum):
+    BITCOIN = "bitcoin"
+    ETHEREUM = "ethereum"
+    SOLANA = "solana"
+    ARBITRUM_ONE = "arbitrum-one"
+    OP_MAINNET = "op-mainnet"  # Optimism mainnet
 
 
-@unique
-class SolTokenAddress(str, Enum):
-    USDT = "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB"
-    USDC = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+TOKEN_ADDRESS: dict[Network, dict[str, str]] = {
+    Network.ETHEREUM: {
+        "USDT": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        "USDC": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    },
+    Network.SOLANA: {
+        "USDT": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+        "USDC": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+    },
+}
 
-
-DEFAULT_ETH_NODES = ["https://ethereum.publicnode.com", "https://rpc.ankr.com/eth"]
-DEFAULT_SOL_NODES = ["https://api.mainnet-beta.solana.com"]
+DEFAULT_ETHEREUM_NODES = ["https://ethereum.publicnode.com", "https://rpc.ankr.com/eth"]
+DEFAULT_SOLANA_NODES = ["https://api.mainnet-beta.solana.com"]
+DEFAULT_ARBITRUM_ONE_NODES = ["https://arb1.arbitrum.io/rpc", "https://arbitrum.llamarpc.com"]
+DEFAULT_OP_MAINNET_NODES = ["https://mainnet.optimism.io", "https://optimism.llamarpc.com"]
 
 
 @unique
@@ -36,10 +46,3 @@ class Coin(str, Enum):
     @classmethod
     def usd_coins(cls) -> list[Coin]:
         return [Coin.USDT, Coin.USDC]
-
-
-@unique
-class Network(str, Enum):
-    BTC = "btc"
-    ETH = "eth"
-    SOL = "sol"

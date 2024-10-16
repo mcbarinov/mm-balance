@@ -32,9 +32,10 @@ class Balances:
             self.tasks[group.network].extend(task_list)
 
         for network in Network:
-            self.progress_bar_task[network] = output.create_progress_task(
-                self.progress_bar, network.value, len(self.tasks[network])
-            )
+            if self.tasks[network]:
+                self.progress_bar_task[network] = output.create_progress_task(
+                    self.progress_bar, network.value, len(self.tasks[network])
+                )
 
     def process(self) -> None:
         with self.progress_bar:
@@ -57,14 +58,14 @@ class Balances:
         proxies = self.config.proxies
         token_decimals = self.token_decimals[network][token_address] if token_address else -1
         match network:
-            case Network.BTC:
+            case Network.BITCOIN:
                 res = btc.get_balance(wallet_address, proxies, round_ndigits)
-            case Network.ETH:
+            case Network.ETHEREUM | Network.ARBITRUM_ONE | Network.OP_MAINNET:
                 if token_address is None:
                     res = eth.get_native_balance(nodes, wallet_address, proxies, round_ndigits)
                 else:
                     res = eth.get_token_balance(nodes, wallet_address, token_address, token_decimals, proxies, round_ndigits)
-            case Network.SOL:
+            case Network.SOLANA:
                 if token_address is None:
                     res = solana.get_native_balance(nodes, wallet_address, proxies, round_ndigits)
                 else:

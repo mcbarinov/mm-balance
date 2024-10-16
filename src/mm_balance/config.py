@@ -1,13 +1,19 @@
 from __future__ import annotations
 
 from decimal import Decimal
-from typing import Any, Self
+from typing import Self
 
 import pydash
 from mm_std import BaseConfig, PrintFormat, fatal, hr
 from pydantic import Field, field_validator, model_validator
 
-from mm_balance.constants import DEFAULT_ETH_NODES, DEFAULT_SOL_NODES, EthTokenAddress, Network, SolTokenAddress
+from mm_balance.constants import (
+    DEFAULT_ARBITRUM_ONE_NODES,
+    DEFAULT_ETHEREUM_NODES,
+    DEFAULT_SOLANA_NODES,
+    TOKEN_ADDRESS,
+    Network,
+)
 
 
 class Group(BaseConfig):
@@ -34,17 +40,17 @@ class Group(BaseConfig):
     def to_list_validator(cls, v: str | list[str] | None) -> list[str]:
         return cls.to_list_str_validator(v, unique=True, remove_comments=True, split_line=True)
 
-    @model_validator(mode="before")
-    def before_all(cls, data: Any) -> Any:
-        if "network" not in data:
-            data["network"] = detect_network(data["coin"])
-        return data
+    # @model_validator(mode="before")
+    # def before_all(cls, data: Any) -> Any:
+    #     if "network" not in data:
+    #         data["network"] = detect_network(data["coin"])
+    #     return data
 
     @model_validator(mode="after")
     def final_validator(self) -> Self:
         if self.token_address is None:
             self.token_address = detect_token_address(self.coin, self.network)
-        if self.token_address is not None and self.network is Network.ETH:
+        if self.token_address is not None and self.network is Network.ETHEREUM:
             self.token_address = self.token_address.lower()
         return self
 
@@ -95,40 +101,36 @@ class Config(BaseConfig):
             group.process_addresses(self.addresses)
 
         # load default rpc nodes
-        if Network.BTC not in self.nodes:
-            self.nodes[Network.BTC] = []
-        if Network.ETH not in self.nodes:
-            self.nodes[Network.ETH] = DEFAULT_ETH_NODES
-        if Network.SOL not in self.nodes:
-            self.nodes[Network.SOL] = DEFAULT_SOL_NODES
+        if Network.BITCOIN not in self.nodes:
+            self.nodes[Network.BITCOIN] = []
+        if Network.ETHEREUM not in self.nodes:
+            self.nodes[Network.ETHEREUM] = DEFAULT_ETHEREUM_NODES
+        if Network.ARBITRUM_ONE not in self.nodes:
+            self.nodes[Network.ARBITRUM_ONE] = DEFAULT_ARBITRUM_ONE_NODES
+        if Network.OP_MAINNET not in self.nodes:
+            self.nodes[Network.OP_MAINNET] = DEFAULT_ARBITRUM_ONE_NODES
+        if Network.SOLANA not in self.nodes:
+            self.nodes[Network.SOLANA] = DEFAULT_SOLANA_NODES
 
         return self
 
 
-def detect_network(coin: str) -> Network:
-    coin = coin.lower()
-    if coin == "btc":
-        return Network.BTC
-    if coin == "eth":
-        return Network.ETH
-    if coin == "sol":
-        return Network.SOL
-    return Network.ETH
-    # TODO: raise ValueError(f"can't get network for the coin: {coin}")
+# def detect_network(coin: str) -> Network:
+#
+#     # coin = coin.lower()
+#     # if coin == "btc":
+#     #     return Network.BTC
+#     # if coin == "eth":
+#     #     return Network.ETH
+#     # if coin == "sol":
+#     #     return Network.SOL
+#     # return Network.ETH
+#     # # TODO: raise ValueError(f"can't get network for the coin: {coin}")
 
 
-def detect_token_address(coin: str, network: str) -> str | None:
-    if network == Network.ETH.lower():
-        if coin.lower() == "usdt":
-            return EthTokenAddress.USDT
-        if coin.lower() == "usdc":
-            return EthTokenAddress.USDC
-
-    if network == Network.SOL.lower():
-        if coin.lower() == "usdt":
-            return SolTokenAddress.USDT
-        if coin.lower() == "usdc":
-            return SolTokenAddress.USDC
+def detect_token_address(coin: str, network: Network) -> str | None:
+    if network in TOKEN_ADDRESS:
+        return TOKEN_ADDRESS[network].get(coin)
 
 
 def get_proxies(proxies_url: str) -> list[str]:

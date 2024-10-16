@@ -23,9 +23,9 @@ def get_token_decimals(config: Config) -> TokenDecimals:
         proxies = config.proxies
 
         match group.network:
-            case Network.ETH:
+            case Network.ETHEREUM:
                 decimals_res = eth.get_token_decimals(nodes, group.token_address, proxies)
-            case Network.SOL:
+            case Network.SOLANA:
                 decimals_res = solana.get_token_decimals(nodes, group.token_address, proxies)
             case _:
                 raise ValueError(f"unsupported network: {group.network}. Cant get token decimals for {group.token_address}")

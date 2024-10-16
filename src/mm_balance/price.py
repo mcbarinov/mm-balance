@@ -5,7 +5,7 @@ from mm_std import fatal, hr
 from mm_std.random_ import random_str_choice
 
 from mm_balance.config import Config, Group
-from mm_balance.constants import RETRIES_COINGECKO_PRICES, EthTokenAddress, Network
+from mm_balance.constants import RETRIES_COINGECKO_PRICES, Network
 
 
 class Prices(dict[str, Decimal]):
@@ -41,15 +41,17 @@ def get_prices(config: Config) -> Prices:
 def get_coingecko_id(group: Group) -> str:
     if group.coingecko_id:
         return group.coingecko_id
-    elif group.network is Network.BTC:
+    elif group.network is Network.BITCOIN:
         return "bitcoin"
-    elif group.network is Network.ETH and group.token_address is None:
+    elif group.network is Network.ETHEREUM and group.token_address is None:
         return "ethereum"
-    elif group.coin.lower() == "usdt" or (group.token_address is not None and group.token_address == EthTokenAddress.USDT):
+    elif group.coin == "ETH":
+        return "ethereum"
+    elif group.coin == "USDT":
         return "tether"
-    elif group.coin.lower() == "usdc" or (group.token_address is not None and group.token_address == EthTokenAddress.USDC):
+    elif group.coin == "USDC":
         return "usd-coin"
-    elif group.coin.lower() == "sol":
+    elif group.coin == "SOL":
         return "solana"
 
     raise ValueError(f"can't get coingecko_id for {group.coin}")

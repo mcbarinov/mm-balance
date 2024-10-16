@@ -58,10 +58,11 @@ def print_total(config: Config, balances: Balances, prices: Prices) -> None:
 
 
 def print_errors(config: Config, balances: Balances) -> None:
-    if not balances:
+    error_balances = balances.get_errors()
+    if not error_balances:
         return
     rows = []
-    for balance in balances.get_errors():
+    for balance in error_balances:
         group = config.groups[balance.group_index]
         rows.append([group.ticker + " / " + group.network, balance.address, balance.balance.err])  # type: ignore[union-attr]
     print_table("Errors", ["coin", "address", "error"], rows)

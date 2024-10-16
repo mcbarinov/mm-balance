@@ -1,19 +1,14 @@
 from __future__ import annotations
 
 from decimal import Decimal
+from pathlib import Path
 from typing import Self
 
 import pydash
 from mm_std import BaseConfig, PrintFormat, fatal, hr
 from pydantic import Field, field_validator, model_validator
 
-from mm_balance.constants import (
-    DEFAULT_ARBITRUM_ONE_NODES,
-    DEFAULT_ETHEREUM_NODES,
-    DEFAULT_SOLANA_NODES,
-    TOKEN_ADDRESS,
-    Network,
-)
+from mm_balance.constants import DEFAULT_NODES, TOKEN_ADDRESS, Network
 
 
 class Group(BaseConfig):
@@ -34,7 +29,7 @@ class Group(BaseConfig):
         return result
 
     @field_validator("ticker", mode="after")
-    def coin_validator(cls, v: str) -> str:
+    def ticker_validator(cls, v: str) -> str:
         return v.upper()
 
     @field_validator("addresses", mode="before")
@@ -63,7 +58,7 @@ class Group(BaseConfig):
             else:
                 # TODO: check address is valid
                 addresses.append(address)
-        self.addresses = addresses
+        self.addresses = pydash.uniq(process_file_addresses(addresses))
 
 
 class AddressGroup(BaseConfig):
@@ -102,36 +97,16 @@ class Config(BaseConfig):
             group.process_addresses(self.addresses)
 
         # load default rpc nodes
-        if Network.BITCOIN not in self.nodes:
-            self.nodes[Network.BITCOIN] = []
-        if Network.ETHEREUM not in self.nodes:
-            self.nodes[Network.ETHEREUM] = DEFAULT_ETHEREUM_NODES
-        if Network.ARBITRUM_ONE not in self.nodes:
-            self.nodes[Network.ARBITRUM_ONE] = DEFAULT_ARBITRUM_ONE_NODES
-        if Network.OP_MAINNET not in self.nodes:
-            self.nodes[Network.OP_MAINNET] = DEFAULT_ARBITRUM_ONE_NODES
-        if Network.SOLANA not in self.nodes:
-            self.nodes[Network.SOLANA] = DEFAULT_SOLANA_NODES
+        for network in Network:
+            if network not in self.nodes:
+                self.nodes[network] = DEFAULT_NODES[network]
 
         return self
 
 
-# def detect_network(coin: str) -> Network:
-#
-#     # coin = coin.lower()
-#     # if coin == "btc":
-#     #     return Network.BTC
-#     # if coin == "eth":
-#     #     return Network.ETH
-#     # if coin == "sol":
-#     #     return Network.SOL
-#     # return Network.ETH
-#     # # TODO: raise ValueError(f"can't get network for the coin: {coin}")
-
-
-def detect_token_address(coin: str, network: Network) -> str | None:
+def detect_token_address(ticker: str, network: Network) -> str | None:
     if network in TOKEN_ADDRESS:
-        return TOKEN_ADDRESS[network].get(coin)
+        return TOKEN_ADDRESS[network].get(ticker)
 
 
 def get_proxies(proxies_url: str) -> list[str]:
@@ -147,3 +122,17 @@ def get_proxies(proxies_url: str) -> list[str]:
 
 def get_address_group_by_name(address_groups: list[AddressGroup], name: str) -> AddressGroup | None:
     return pydash.find(address_groups, lambda g: g.name == name)
+
+
+def process_file_addresses(addresses: list[str]) -> list[str]:
+    result = []
+    for address in addresses:
+        if address.startswith("file://"):
+            path = Path(address.removeprefix("file://"))
+            if path.is_file():
+                result.extend(path.read_text().strip().splitlines())
+            else:
+                fatal(f"File with addresses not found: {path}")
+        else:
+            result.append(address)
+    return result

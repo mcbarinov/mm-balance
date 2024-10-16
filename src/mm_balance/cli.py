@@ -51,6 +51,7 @@ def cli(
 
     output.print_groups(balances, config, prices)
     output.print_total(config, balances, prices)
+    output.print_errors(config, balances)
 
 
 if __name__ == "__main__":

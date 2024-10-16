@@ -57,6 +57,16 @@ def print_total(config: Config, balances: Balances, prices: Prices) -> None:
     total.print()
 
 
+def print_errors(config: Config, balances: Balances) -> None:
+    if not balances:
+        return
+    rows = []
+    for balance in balances.get_errors():
+        group = config.groups[balance.group_index]
+        rows.append([group.ticker + " / " + group.network, balance.address, balance.balance.err])  # type: ignore[union-attr]
+    print_table("Errors", ["coin", "address", "error"], rows)
+
+
 def create_progress_bar() -> Progress:
     return Progress(
         TextColumn("[progress.description]{task.description}"),

@@ -80,3 +80,11 @@ class Balances:
     def get_group_balances(self, group_index: int, network: Network) -> list[Balance]:
         # TODO: can we get network by group_index?
         return [b for b in self.tasks[network] if b.group_index == group_index]
+
+    def get_errors(self) -> list[Balance]:
+        result = []
+        for network in self.tasks:
+            for task in self.tasks[network]:
+                if task.balance is not None and task.balance.is_err():
+                    result.append(task)
+        return result

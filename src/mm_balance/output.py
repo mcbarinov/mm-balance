@@ -20,6 +20,8 @@ def _print_group(group: Group, group_balances: list[Balances.Balance], config: C
     balance_sum = Decimal(0)
     usd_sum = Decimal(0)
     for address_task in group_balances:
+        if config.skip_empty and isinstance(address_task.balance, Ok) and address_task.balance.ok == Decimal(0):
+            continue
         row = [address_task.address, address_task.balance.ok_or_err()]  # type: ignore[union-attr]
         if isinstance(address_task.balance, Ok):
             balance_sum += address_task.balance.ok

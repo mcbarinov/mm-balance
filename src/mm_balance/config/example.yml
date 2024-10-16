@@ -60,3 +60,4 @@ addresses:
 #- http://123.123.123.124
 #round_ndigits: 4
 #price: yes
+#skip_empty: no

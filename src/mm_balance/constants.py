@@ -27,7 +27,14 @@ TOKEN_ADDRESS: dict[Network, dict[str, str]] = {
         "USDT": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
         "USDC": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
     },
-    # TODO: Add for Arbitrum and Optimism, usdt + usdc
+    Network.ARBITRUM_ONE: {
+        "USDT": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+        "USDC": "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
+    },
+    Network.OP_MAINNET: {
+        "USDT": "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58",
+        "USDC": "0x7f5c764cbc14f9669b88837ca1490cca17c31607",
+    },
 }
 
 TICKER_TO_COINGECKO_ID = {

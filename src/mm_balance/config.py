@@ -80,6 +80,7 @@ class Config(BaseConfig):
     nodes: dict[Network, list[str]] = Field(default_factory=dict)
     print_format: PrintFormat = PrintFormat.TABLE
     price: bool = True
+    skip_empty: bool = False  # don't print the address with an empty balance
 
     workers: dict[Network, int] = {network: 5 for network in Network}
 

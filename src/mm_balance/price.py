@@ -20,7 +20,7 @@ class Prices(dict[str, Decimal]):
 def get_prices(config: Config) -> Prices:
     result = Prices()
 
-    coins = pydash.uniq([group.coin for group in config.groups])
+    coins = pydash.uniq([group.ticker for group in config.groups])
     coingecko_ids = pydash.uniq([get_coingecko_id(group) for group in config.groups])
 
     url = f"https://api.coingecko.com/api/v3/simple/price?ids={",".join(coingecko_ids)}&vs_currencies=usd"
@@ -38,6 +38,15 @@ def get_prices(config: Config) -> Prices:
     return result
 
 
+TICKER_TO_COINGECKO_ID = {
+    "BTC": "bitcoin",
+    "ETH": "ethereum",
+    "USDT": "tether",
+    "USDC": "usd-coin",
+    "SOL": "solana",
+}
+
+
 def get_coingecko_id(group: Group) -> str:
     if group.coingecko_id:
         return group.coingecko_id
@@ -45,13 +54,13 @@ def get_coingecko_id(group: Group) -> str:
         return "bitcoin"
     elif group.network is Network.ETHEREUM and group.token_address is None:
         return "ethereum"
-    elif group.coin == "ETH":
+    elif group.ticker == "ETH":
         return "ethereum"
-    elif group.coin == "USDT":
+    elif group.ticker == "USDT":
         return "tether"
-    elif group.coin == "USDC":
+    elif group.ticker == "USDC":
         return "usd-coin"
-    elif group.coin == "SOL":
+    elif group.ticker == "SOL":
         return "solana"
 
-    raise ValueError(f"can't get coingecko_id for {group.coin}")
+    raise ValueError(f"can't get coingecko_id for {group.ticker}")

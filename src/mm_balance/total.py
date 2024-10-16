@@ -7,7 +7,7 @@ from mm_std import Ok, PrintFormat, print_table
 
 from mm_balance.balances import Balances
 from mm_balance.config import Config
-from mm_balance.constants import Coin
+from mm_balance.constants import USD_STABLECOINS
 from mm_balance.price import Prices
 
 
@@ -38,16 +38,16 @@ class Total:
             for address_task in balances.get_group_balances(group_index, group.network):
                 if isinstance(address_task.balance, Ok):
                     balance_sum += address_task.balance.ok
-                    if group.coin in Coin.usd_coins():
+                    if group.ticker in USD_STABLECOINS:
                         stablecoin_sum += address_task.balance.ok
                         stablecoin_sum_share += address_task.balance.ok * group.share
                     if config.price:
-                        balance_usd = round(address_task.balance.ok * prices[group.coin], config.round_ndigits)
+                        balance_usd = round(address_task.balance.ok * prices[group.ticker], config.round_ndigits)
                         usd_sum += balance_usd
                         usd_sum_share += group.share * balance_usd
 
-            coins[group.coin] += balance_sum
-            coins_share[group.coin] += round(balance_sum * group.share, config.round_ndigits)
+            coins[group.ticker] += balance_sum
+            coins_share[group.ticker] += round(balance_sum * group.share, config.round_ndigits)
         return cls(
             coins=coins,
             coins_share=coins_share,
@@ -78,7 +78,7 @@ class Total:
             rows = []
             for key, value in self.coins.items():
                 usd_value = round(value * self.prices[key], self.config.round_ndigits)
-                if key in Coin.usd_coins():
+                if key in USD_STABLECOINS:
                     usd_share = round(self.stablecoin_sum * 100 / self.usd_sum, self.config.round_ndigits)
                 else:
                     usd_share = round(usd_value * 100 / self.usd_sum, self.config.round_ndigits)
@@ -97,7 +97,7 @@ class Total:
         rows = []
         for key, _ in self.coins.items():
             usd_value = round(self.coins_share[key] * self.prices[key], self.config.round_ndigits)
-            if key in Coin.usd_coins():
+            if key in USD_STABLECOINS:
                 usd_share = round(self.stablecoin_sum_share * 100 / self.usd_sum_share, self.config.round_ndigits)
             else:
                 usd_share = round(usd_value * 100 / self.usd_sum_share, self.config.round_ndigits)

@@ -31,7 +31,7 @@ def get_token_decimals(config: Config) -> TokenDecimals:
                 raise ValueError(f"unsupported network: {group.network}. Cant get token decimals for {group.token_address}")
 
         if isinstance(decimals_res, Err):
-            fatal(f"can't get decimals for token {group.coin} / {group.token_address}, error={decimals_res.err}")
+            fatal(f"can't get decimals for token {group.ticker} / {group.token_address}, error={decimals_res.err}")
         result[group.network][group.token_address] = decimals_res.ok
 
     return result

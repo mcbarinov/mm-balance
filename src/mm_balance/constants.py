@@ -29,20 +29,17 @@ TOKEN_ADDRESS: dict[Network, dict[str, str]] = {
     },
 }
 
+TICKER_TO_COINGECKO_ID = {
+    "BTC": "bitcoin",
+    "ETH": "ethereum",
+    "USDT": "tether",
+    "USDC": "usd-coin",
+    "SOL": "solana",
+}
+
+USD_STABLECOINS = ["USDT", "USDC"]
+
 DEFAULT_ETHEREUM_NODES = ["https://ethereum.publicnode.com", "https://rpc.ankr.com/eth"]
 DEFAULT_SOLANA_NODES = ["https://api.mainnet-beta.solana.com"]
 DEFAULT_ARBITRUM_ONE_NODES = ["https://arb1.arbitrum.io/rpc", "https://arbitrum.llamarpc.com"]
 DEFAULT_OP_MAINNET_NODES = ["https://mainnet.optimism.io", "https://optimism.llamarpc.com"]
-
-
-@unique
-class Coin(str, Enum):
-    BTC = "BTC"
-    ETH = "ETH"
-    SOL = "SOL"
-    USDT = "USDT"
-    USDC = "USDC"
-
-    @classmethod
-    def usd_coins(cls) -> list[Coin]:
-        return [Coin.USDT, Coin.USDC]

@@ -24,7 +24,7 @@ def _print_group(group: Group, group_balances: list[Balances.Balance], config: C
         if isinstance(address_task.balance, Ok):
             balance_sum += address_task.balance.ok
             if config.price:
-                balance_usd = round(address_task.balance.ok * prices[group.coin], config.round_ndigits)
+                balance_usd = round(address_task.balance.ok * prices[group.ticker], config.round_ndigits)
                 usd_sum += balance_usd
                 row.append(f"${balance_usd}")
         rows.append(row)

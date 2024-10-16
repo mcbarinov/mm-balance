@@ -18,7 +18,7 @@ from mm_balance.constants import (
 
 class Group(BaseConfig):
     comment: str = ""
-    coin: str
+    ticker: str
     network: Network
     token_address: str | None = None
     coingecko_id: str | None = None
@@ -27,12 +27,13 @@ class Group(BaseConfig):
 
     @property
     def name(self) -> str:
-        result = self.coin
+        result = self.ticker
         if self.comment:
             result += " / " + self.comment
+        result += " / " + self.network.value
         return result
 
-    @field_validator("coin", mode="after")
+    @field_validator("ticker", mode="after")
     def coin_validator(cls, v: str) -> str:
         return v.upper()
 
@@ -49,7 +50,7 @@ class Group(BaseConfig):
     @model_validator(mode="after")
     def final_validator(self) -> Self:
         if self.token_address is None:
-            self.token_address = detect_token_address(self.coin, self.network)
+            self.token_address = detect_token_address(self.ticker, self.network)
         if self.token_address is not None and self.network is Network.ETHEREUM:
             self.token_address = self.token_address.lower()
         return self

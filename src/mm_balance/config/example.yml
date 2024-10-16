@@ -1,14 +1,16 @@
 coins:
-  - coin: sol
+  - ticker: SOL
+    network: solana
     addresses:
       - 2ojv9BAiHUrvsm9gxDe7fJSzbNZSJcxZvf8dqmWGHG8S # binance
 
-  - coin: usdt
-    network: sol
+  - ticker: USDT
+    network: solana
     addresses:
       - 2ojv9BAiHUrvsm9gxDe7fJSzbNZSJcxZvf8dqmWGHG8S # binance
 
-  - coin: btc
+  - ticker: BTC
+    network: bitcoin
     comment: coldwallets
     addresses: |
       34xp4vRoCGJym3xR7yCVPFHoCNxv4Twseo # binance
@@ -16,19 +18,23 @@ coins:
       bc1ql49ydapnjafl5t2cp9zqpjwe6pdgmxy98859v2 # robinhood
     share: 0.1 # 10%
 
-  - coin: eth
+  - ticker: ETH
+    network: ethereum
     comment: okx
     addresses: okx_eth
 
-  - coin: usdt
+  - ticker: USDT
+    network: ethereum
     comment: okx
     addresses: okx_eth
 
-  - coin: eth
+  - ticker: ETH
+    network: ethereum
     comment: binance
     addresses: binance_eth
 
-  - coin: usdt
+  - ticker: USDT
+    network: ethereum
     comment: binance
     addresses: binance_eth
 

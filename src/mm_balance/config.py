@@ -16,9 +16,11 @@ class Group(BaseConfig):
     ticker: str
     network: Network
     token_address: str | None = None
+    token_decimals: int | None = None
     coingecko_id: str | None = None
     addresses: list[str] = Field(default_factory=list)
     share: Decimal = Decimal(1)
+    nodes: list[str] = Field(default_factory=list)
 
     @property
     def name(self) -> str:
@@ -97,10 +99,15 @@ class Config(BaseConfig):
         for group in self.groups:
             group.process_addresses(self.addresses)
 
-        # load default rpc nodes
-        for network in Network:
-            if network not in self.nodes:
-                self.nodes[network] = DEFAULT_NODES[network]
+        # load default nodes
+        for group in self.groups:
+            if not group.nodes:
+                group.nodes = DEFAULT_NODES[group.network]
+
+        # # load default rpc nodes
+        # for network in Network:
+        #     if network not in self.nodes:
+        #         self.nodes[network] = DEFAULT_NODES[network]
 
         return self
 

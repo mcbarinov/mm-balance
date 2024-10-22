@@ -2,7 +2,7 @@ from mm_std import Err, fatal
 
 from mm_balance.config import Config
 from mm_balance.constants import Network
-from mm_balance.rpc import eth, solana
+from mm_balance.rpc import solana
 
 
 class TokenDecimals(dict[Network, dict[str, int]]):
@@ -14,13 +14,17 @@ class TokenDecimals(dict[Network, dict[str, int]]):
 
 def get_token_decimals(config: Config) -> TokenDecimals:
     result = TokenDecimals()
+    proxies = config.proxies
 
     for group in config.groups:
         if group.token_address is None or group.token_address in result[group.network]:
             continue
 
+        if group.token_address and group.token_decimals is not None:
+            result[group.network][group.token_address] = group.token_decimals
+            continue
+
         nodes = config.nodes[group.network]
-        proxies = config.proxies
 
         match group.network:
             case Network.ETHEREUM:

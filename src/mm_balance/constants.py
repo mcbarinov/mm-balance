@@ -17,6 +17,10 @@ class Network(str, Enum):
     ETHEREUM = "ethereum"
     SOLANA = "solana"
     OP_MAINNET = "op-mainnet"  # Optimism mainnet
+    EVM = "evm"  # Ethereum Virtual Machine
+
+    def is_evm_network(self) -> bool:
+        return self in [Network.ETHEREUM, Network.EVM, Network.ARBITRUM_ONE, Network.OP_MAINNET]
 
 
 TOKEN_ADDRESS: dict[Network, dict[str, str]] = {

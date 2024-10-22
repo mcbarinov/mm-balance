@@ -11,6 +11,7 @@ TIMEOUT_DECIMALS = 5
 
 @unique
 class Network(str, Enum):
+    APTOS = "aptos"
     ARBITRUM_ONE = "arbitrum-one"
     BITCOIN = "bitcoin"
     ETHEREUM = "ethereum"
@@ -43,6 +44,7 @@ TICKER_TO_COINGECKO_ID = {
     "USDT": "tether",
     "USDC": "usd-coin",
     "SOL": "solana",
+    "APT": "aptos",
 }
 
 USD_STABLECOINS = ["USDT", "USDC"]
@@ -53,4 +55,5 @@ DEFAULT_NODES: dict[Network, list[str]] = {
     Network.ETHEREUM: ["https://ethereum.publicnode.com", "https://rpc.ankr.com/eth"],
     Network.SOLANA: ["https://api.mainnet-beta.solana.com"],
     Network.OP_MAINNET: ["https://mainnet.optimism.io", "https://optimism.llamarpc.com"],
+    Network.APTOS: ["https://fullnode.mainnet.aptoslabs.com/v1"],
 }

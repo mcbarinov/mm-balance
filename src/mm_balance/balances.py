@@ -9,7 +9,7 @@ from rich.progress import TaskID
 from mm_balance import output
 from mm_balance.config import Config
 from mm_balance.constants import Network
-from mm_balance.rpc import btc, eth, solana
+from mm_balance.rpc import aptos, btc, eth, solana
 from mm_balance.token_decimals import TokenDecimals
 
 
@@ -60,6 +60,8 @@ class Balances:
         match network:
             case Network.BITCOIN:
                 res = btc.get_balance(wallet_address, proxies, round_ndigits)
+            case Network.APTOS:
+                res = aptos.get_native_balance(nodes, wallet_address, proxies, round_ndigits)
             case Network.ETHEREUM | Network.ARBITRUM_ONE | Network.OP_MAINNET:
                 if token_address is None:
                     res = eth.get_native_balance(nodes, wallet_address, proxies, round_ndigits)

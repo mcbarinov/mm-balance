@@ -10,7 +10,7 @@ def get_balance(
     nodes: list[str], wallet: str, token: str | None, decimals: int, proxies: list[str], round_ndigits: int
 ) -> Result[Decimal]:
     if token is None:
-        token = "0x1::aptos_coin::AptosCoin"
+        token = "0x1::aptos_coin::AptosCoin"  # nosec
     return balance.get_decimal_balance_with_retries(
         RETRIES_BALANCE,
         nodes,

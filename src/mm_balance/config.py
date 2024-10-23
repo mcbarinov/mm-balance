@@ -83,6 +83,7 @@ class Config(BaseConfig):
     price: bool = True
     skip_empty: bool = False  # don't print the address with an empty balance
     print_debug: bool = False  # print debug info: nodes, token_decimals
+    format_number_separator: str = ","  #  as thousands separators
     workers: dict[Network, int] = Field(default_factory=dict)
 
     def has_share(self) -> bool:

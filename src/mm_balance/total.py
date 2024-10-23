@@ -9,6 +9,7 @@ from mm_balance.balances import Balances
 from mm_balance.config import Config
 from mm_balance.constants import USD_STABLECOINS
 from mm_balance.price import Prices
+from mm_balance.utils import fnumber
 
 
 @dataclass
@@ -18,7 +19,7 @@ class Total:
     usd_sum: Decimal  # sum of all coins in USD
     usd_sum_share: Decimal
 
-    stablecoin_sum: Decimal  # sum of usd stablecoins: usdt, usdc
+    stablecoin_sum: Decimal  # sum of usd stablecoins: usdt, usdc, etc..
     stablecoin_sum_share: Decimal
 
     config: Config
@@ -53,7 +54,6 @@ class Total:
             coins_share=coins_share,
             usd_sum=usd_sum,
             usd_sum_share=usd_sum_share,
-            # usd_share=usd_share,
             stablecoin_sum=stablecoin_sum,
             stablecoin_sum_share=stablecoin_sum_share,
             config=config,
@@ -82,15 +82,21 @@ class Total:
                     usd_share = round(self.stablecoin_sum * 100 / self.usd_sum, self.config.round_ndigits)
                 else:
                     usd_share = round(usd_value * 100 / self.usd_sum, self.config.round_ndigits)
-                rows.append([key, value, f"${usd_value}", f"{usd_share}%"])
-            rows.append(["usd_sum", f"${self.usd_sum}"])
+
+                value_str = fnumber(value, self.config.format_number_separator)
+                usd_value_str = fnumber(usd_value, self.config.format_number_separator, "$")
+
+                rows.append([key, value_str, usd_value_str, f"{usd_share}%"])
+
+            rows.append(["stablecoin_sum", fnumber(self.stablecoin_sum, self.config.format_number_separator, "$")])
+            rows.append(["usd_sum", fnumber(self.usd_sum, self.config.format_number_separator, "$")])
             print_table("Total", ["coin", "balance", "usd", "usd_share"], rows)
 
     def _print_total_total_without_price(self) -> None:
         if self.config.print_format == PrintFormat.TABLE:
             rows = []
             for key, value in self.coins.items():
-                rows.append([key, value])
+                rows.append([key, fnumber(value, self.config.format_number_separator)])
             print_table("Total", ["coin", "balance"], rows)
 
     def _print_share_total_with_price(self) -> None:
@@ -101,12 +107,16 @@ class Total:
                 usd_share = round(self.stablecoin_sum_share * 100 / self.usd_sum_share, self.config.round_ndigits)
             else:
                 usd_share = round(usd_value * 100 / self.usd_sum_share, self.config.round_ndigits)
-            rows.append([key, self.coins_share[key], f"${usd_value}", f"{usd_share}%"])
-        rows.append(["usd_sum", f"${self.usd_sum_share}"])
+            value = fnumber(self.coins_share[key], self.config.format_number_separator)
+            usd_value_str = fnumber(usd_value, self.config.format_number_separator, "$")
+            rows.append([key, value, usd_value_str, f"{usd_share}%"])
+        rows.append(["stablecoin_sum", fnumber(self.stablecoin_sum_share, self.config.format_number_separator, "$")])
+        rows.append(["usd_sum", fnumber(self.usd_sum_share, self.config.format_number_separator, "$")])
         print_table("Total, share", ["coin", "balance", "usd", "usd_share"], rows)
 
     def _print_share_total_without_price(self) -> None:
         rows = []
         for key, _ in self.coins.items():
-            rows.append([key, self.coins_share[key]])
+            value = fnumber(self.coins_share[key], self.config.format_number_separator)
+            rows.append([key, value])
         print_table("Total, share", ["coin", "balance"], rows)

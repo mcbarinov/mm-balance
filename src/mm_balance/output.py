@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-from mm_std import Ok, print_console, print_json, print_table
+from mm_std import Err, Ok, fatal, print_table
 from rich.progress import BarColumn, MofNCompleteColumn, Progress, TaskID, TextColumn
 
 from mm_balance.balances import Balances
@@ -8,6 +8,7 @@ from mm_balance.config import Config, Group
 from mm_balance.price import Prices
 from mm_balance.token_decimals import TokenDecimals
 from mm_balance.total import Total
+from mm_balance.utils import fnumber
 
 
 def print_groups(balances: Balances, config: Config, prices: Prices) -> None:
@@ -21,26 +22,35 @@ def _print_group(group: Group, group_balances: list[Balances.Balance], config: C
     balance_sum = Decimal(0)
     usd_sum = Decimal(0)
     for address_task in group_balances:
-        if config.skip_empty and isinstance(address_task.balance, Ok) and address_task.balance.ok == Decimal(0):
-            continue
-        row = [address_task.address, address_task.balance.ok_or_err()]  # type: ignore[union-attr]
-        if isinstance(address_task.balance, Ok):
-            balance_sum += address_task.balance.ok
+        if isinstance(address_task.balance, Err):
+            row = [address_task.address, address_task.balance.err]
+        elif isinstance(address_task.balance, Ok):
+            balance = address_task.balance.ok
+            balance_sum += balance
+            if config.skip_empty and balance == Decimal(0):
+                continue
+            row = [address_task.address, fnumber(balance, config.format_number_separator)]
             if config.price:
-                balance_usd = round(address_task.balance.ok * prices[group.ticker], config.round_ndigits)
+                balance_usd = round(balance * prices[group.ticker], config.round_ndigits)
                 usd_sum += balance_usd
-                row.append(f"${balance_usd}")
+                row.append(fnumber(balance_usd, config.format_number_separator, "$"))
+        else:
+            fatal("address_task is None!")
         rows.append(row)
 
-    sum_row = ["sum", round(balance_sum, config.round_ndigits)]
+    balance_sum_str = fnumber(round(balance_sum, config.round_ndigits), config.format_number_separator)
+    sum_row = ["sum", balance_sum_str]
     if config.price:
-        sum_row.append(f"${round(usd_sum, config.round_ndigits)}")
+        usd_sum_str = fnumber(round(usd_sum, config.round_ndigits), config.format_number_separator, "$")
+        sum_row.append(usd_sum_str)
     rows.append(sum_row)
 
     if group.share < Decimal(1):
-        sum_share_row = [f"sum_share, {group.share}", round(balance_sum * group.share, config.round_ndigits)]
+        sum_share_str = fnumber(round(balance_sum * group.share, config.round_ndigits), config.format_number_separator)
+        sum_share_row = [f"sum_share, {group.share}", sum_share_str]
         if config.price:
-            sum_share_row.append(f"${round(usd_sum * group.share, config.round_ndigits)}")
+            usd_sum_share_str = fnumber(round(usd_sum * group.share, config.round_ndigits), config.format_number_separator, "$")
+            sum_share_row.append(usd_sum_share_str)
         rows.append(sum_share_row)
 
     table_headers = ["address", "balance"]
@@ -50,20 +60,24 @@ def _print_group(group: Group, group_balances: list[Balances.Balance], config: C
 
 
 def print_nodes(config: Config) -> None:
-    print_console("Nodes")
-    print_json(config.nodes)
-    print_console("")
+    rows = []
+    for network, nodes in config.nodes.items():
+        rows.append([network, "\n".join(nodes)])
+    print_table("Nodes", ["network", "nodes"], rows)
 
 
 def print_token_decimals(token_decimals: TokenDecimals) -> None:
-    print_console("Token decimals")
-    print_json(token_decimals)
-    print_console("")
+    rows = []
+    for network, decimals in token_decimals.items():
+        rows.append([network, decimals])
+    print_table("Token Decimals", ["network", "decimals"], rows)
 
 
 def print_prices(config: Config, prices: Prices) -> None:
     if config.price:
-        rows = [[k, round(v, config.round_ndigits)] for (k, v) in prices.items()]
+        rows = []
+        for ticker, price in prices.items():
+            rows.append([ticker, fnumber(round(price, config.round_ndigits), config.format_number_separator, "$")])
         print_table("Prices", ["coin", "usd"], rows)
 
 

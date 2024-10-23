@@ -70,3 +70,4 @@ addresses:
 #price: yes
 #skip_empty: no
 #print_debug: no
+#format_number_separator: ","

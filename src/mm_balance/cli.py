@@ -42,10 +42,16 @@ def cli(
         zip_password = getpass.getpass("zip password")
     config = Config.read_config(config_path, zip_password=zip_password)
 
+    if config.print_debug:
+        output.print_nodes(config)
+
+    token_decimals = get_token_decimals(config)
+    if config.print_debug:
+        output.print_token_decimals(token_decimals)
+
     prices = get_prices(config) if config.price else Prices()
     output.print_prices(config, prices)
 
-    token_decimals = get_token_decimals(config)
     balances = Balances(config, token_decimals)
     balances.process()
 

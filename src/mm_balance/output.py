@@ -1,11 +1,12 @@
 from decimal import Decimal
 
-from mm_std import Ok, print_table
+from mm_std import Ok, print_console, print_json, print_table
 from rich.progress import BarColumn, MofNCompleteColumn, Progress, TaskID, TextColumn
 
 from mm_balance.balances import Balances
 from mm_balance.config import Config, Group
 from mm_balance.price import Prices
+from mm_balance.token_decimals import TokenDecimals
 from mm_balance.total import Total
 
 
@@ -46,6 +47,18 @@ def _print_group(group: Group, group_balances: list[Balances.Balance], config: C
     if config.price:
         table_headers += ["usd"]
     print_table(group.name, table_headers, rows)
+
+
+def print_nodes(config: Config) -> None:
+    print_console("Nodes")
+    print_json(config.nodes)
+    print_console("")
+
+
+def print_token_decimals(token_decimals: TokenDecimals) -> None:
+    print_console("Token decimals")
+    print_json(token_decimals)
+    print_console("")
 
 
 def print_prices(config: Config, prices: Prices) -> None:

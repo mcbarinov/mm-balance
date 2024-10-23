@@ -1,7 +1,7 @@
 from mm_std import Err, fatal
 
 from mm_balance.config import Config
-from mm_balance.constants import NETWORK_BITCOIN, NETWORK_SOLANA, Network
+from mm_balance.constants import NETWORK_APTOS, NETWORK_BITCOIN, NETWORK_SOLANA, Network
 from mm_balance.rpc import evm, solana
 
 
@@ -29,6 +29,8 @@ def get_token_decimals(config: Config) -> TokenDecimals:
             elif group.network == NETWORK_SOLANA:
                 result[group.network][None] = 9
             elif group.network == NETWORK_BITCOIN:
+                result[group.network][None] = 8
+            elif group.network == NETWORK_APTOS:
                 result[group.network][None] = 8
             else:
                 fatal(f"Can't get token decimals for native token on network: {group.network}")

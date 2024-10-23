@@ -82,6 +82,7 @@ class Config(BaseConfig):
     print_format: PrintFormat = PrintFormat.TABLE
     price: bool = True
     skip_empty: bool = False  # don't print the address with an empty balance
+    print_debug: bool = False  # print debug info: nodes, token_decimals
     workers: dict[Network, int] = Field(default_factory=dict)
 
     def has_share(self) -> bool:

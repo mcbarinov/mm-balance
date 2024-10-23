@@ -49,6 +49,7 @@ class Balances:
         for idx, task in enumerate(self.tasks[network]):
             job.add_task(str(idx), self._get_balance, args=(network, task.address, task.token_address))
         job.execute()
+        # TODO: print job.exceptions if present
         for idx, _task in enumerate(self.tasks[network]):
             self.tasks[network][idx].balance = job.result.get(str(idx))  # type: ignore[assignment]
 
@@ -63,15 +64,9 @@ class Balances:
         elif network == NETWORK_BITCOIN:
             res = btc.get_balance(wallet_address, proxies, round_ndigits)
         elif network == NETWORK_APTOS:
-            if token_address is None:
-                res = aptos.get_native_balance(nodes, wallet_address, proxies, round_ndigits)
-            else:
-                res = aptos.get_token_balance(nodes, wallet_address, token_address, token_decimals, proxies, round_ndigits)
+            res = aptos.get_balance(nodes, wallet_address, token_address, token_decimals, proxies, round_ndigits)
         elif network == NETWORK_SOLANA:
-            if token_address is None:
-                res = solana.get_native_balance(nodes, wallet_address, proxies, round_ndigits)
-            else:
-                res = solana.get_token_balance(nodes, wallet_address, token_address, token_decimals, proxies, round_ndigits)
+            res = solana.get_balance(nodes, wallet_address, token_address, token_decimals, proxies, round_ndigits)
         else:
             raise ValueError(f"Unsupported network: {network}")
 

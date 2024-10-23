@@ -8,8 +8,8 @@ from rich.progress import TaskID
 
 from mm_balance import output
 from mm_balance.config import Config
-from mm_balance.constants import Network
-from mm_balance.rpc import aptos, btc, solana, evm
+from mm_balance.constants import NETWORK_APTOS, NETWORK_BITCOIN, NETWORK_SOLANA, Network
+from mm_balance.rpc import aptos, btc, evm, solana
 from mm_balance.token_decimals import TokenDecimals
 
 
@@ -23,7 +23,7 @@ class Balances:
     def __init__(self, config: Config, token_decimals: TokenDecimals):
         self.config = config
         self.token_decimals = token_decimals
-        self.tasks: dict[Network, list[Balances.Balance]] = {network: [] for network in Network}
+        self.tasks: dict[Network, list[Balances.Balance]] = {network: [] for network in config.networks()}
         self.progress_bar = output.create_progress_bar()
         self.progress_bar_task: dict[Network, TaskID] = {}
 
@@ -31,27 +31,24 @@ class Balances:
             task_list = [Balances.Balance(group_index=idx, address=a, token_address=group.token_address) for a in group.addresses]
             self.tasks[group.network].extend(task_list)
 
-        for network in Network:
+        for network in config.networks():
             if self.tasks[network]:
                 self.progress_bar_task[network] = output.create_progress_task(
-                    self.progress_bar, network.value, len(self.tasks[network])
+                    self.progress_bar, network, len(self.tasks[network])
                 )
 
     def process(self) -> None:
         with self.progress_bar:
             job = ConcurrentTasks(max_workers=10)
-            for network in Network:
-                job.add_task(network.value, self._process_network, args=(network,))
+            for network in self.config.networks():
+                job.add_task(network, self._process_network, args=(network,))
             job.execute()
 
     def _process_network(self, network: Network) -> None:
-        print("_process_network", network)
         job = ConcurrentTasks(max_workers=self.config.workers[network])
         for idx, task in enumerate(self.tasks[network]):
             job.add_task(str(idx), self._get_balance, args=(network, task.address, task.token_address))
-        print("z1")
         job.execute()
-        print("z2", job.exceptions)
         for idx, _task in enumerate(self.tasks[network]):
             self.tasks[network][idx].balance = job.result.get(str(idx))  # type: ignore[assignment]
 
@@ -59,26 +56,24 @@ class Balances:
         nodes = self.config.nodes[network]
         round_ndigits = self.config.round_ndigits
         proxies = self.config.proxies
-        token_decimals = self.token_decimals[network][token_address] if token_address else -1
+        token_decimals = self.token_decimals[network][token_address]
 
         if network.is_evm_network():
             res = evm.get_balance(nodes, wallet_address, token_address, token_decimals, proxies, round_ndigits)
-        elif network == Network.BITCOIN:
+        elif network == NETWORK_BITCOIN:
             res = btc.get_balance(wallet_address, proxies, round_ndigits)
-        elif network == Network.APTOS:
+        elif network == NETWORK_APTOS:
             if token_address is None:
                 res = aptos.get_native_balance(nodes, wallet_address, proxies, round_ndigits)
             else:
                 res = aptos.get_token_balance(nodes, wallet_address, token_address, token_decimals, proxies, round_ndigits)
-        elif network == Network.SOLANA:
+        elif network == NETWORK_SOLANA:
             if token_address is None:
                 res = solana.get_native_balance(nodes, wallet_address, proxies, round_ndigits)
             else:
                 res = solana.get_token_balance(nodes, wallet_address, token_address, token_decimals, proxies, round_ndigits)
         else:
             raise ValueError(f"Unsupported network: {network}")
-
-        print(res)
 
         self.progress_bar.update(self.progress_bar_task[network], advance=1)
         return res

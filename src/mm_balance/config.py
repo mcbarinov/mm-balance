@@ -15,19 +15,18 @@ class Group(BaseConfig):
     comment: str = ""
     ticker: str
     network: Network
-    token_address: str | None = None
+    token_address: str | None = None  # If None, it's a native token, for example ETH
     token_decimals: int | None = None
     coingecko_id: str | None = None
     addresses: list[str] = Field(default_factory=list)
     share: Decimal = Decimal(1)
-    nodes: list[str] = Field(default_factory=list)
 
     @property
     def name(self) -> str:
         result = self.ticker
         if self.comment:
             result += " / " + self.comment
-        result += " / " + self.network.value
+        result += " / " + self.network
         return result
 
     @field_validator("ticker", mode="after")
@@ -48,7 +47,7 @@ class Group(BaseConfig):
     def final_validator(self) -> Self:
         if self.token_address is None:
             self.token_address = detect_token_address(self.ticker, self.network)
-        if self.token_address is not None and self.network is Network.ETHEREUM:
+        if self.token_address is not None and self.network.is_evm_network():
             self.token_address = self.token_address.lower()
         return self
 
@@ -83,11 +82,13 @@ class Config(BaseConfig):
     print_format: PrintFormat = PrintFormat.TABLE
     price: bool = True
     skip_empty: bool = False  # don't print the address with an empty balance
-
-    workers: dict[Network, int] = {network: 5 for network in Network}
+    workers: dict[Network, int] = Field(default_factory=dict)
 
     def has_share(self) -> bool:
         return any(g.share != Decimal(1) for g in self.groups)
+
+    def networks(self) -> list[Network]:
+        return pydash.uniq([group.network for group in self.groups])
 
     @model_validator(mode="after")
     def final_validator(self) -> Self:
@@ -99,15 +100,15 @@ class Config(BaseConfig):
         for group in self.groups:
             group.process_addresses(self.addresses)
 
-        # load default nodes
-        for group in self.groups:
-            if not group.nodes:
-                group.nodes = DEFAULT_NODES[group.network]
+        # load default rpc nodes
+        for network in self.networks():
+            if network not in self.nodes:
+                self.nodes[network] = DEFAULT_NODES[network]
 
-        # # load default rpc nodes
-        # for network in Network:
-        #     if network not in self.nodes:
-        #         self.nodes[network] = DEFAULT_NODES[network]
+        # load default workers
+        for network in self.networks():
+            if network not in self.workers:
+                self.workers[network] = 5
 
         return self
 

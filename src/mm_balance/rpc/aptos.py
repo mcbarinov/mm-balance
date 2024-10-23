@@ -32,4 +32,3 @@ def get_token_balance(
         proxies=proxies,
         round_ndigits=round_ndigits,
     )
-

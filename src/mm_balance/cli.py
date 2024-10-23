@@ -8,7 +8,7 @@ import typer
 from mm_balance import output
 from mm_balance.balances import Balances
 from mm_balance.config import Config
-from mm_balance.constants import Network
+from mm_balance.constants import NETWORKS
 from mm_balance.price import Prices, get_prices
 from mm_balance.token_decimals import get_token_decimals
 
@@ -24,7 +24,7 @@ def example_callback(value: bool) -> None:
 
 def networks_callback(value: bool) -> None:
     if value:
-        for network in Network:
+        for network in NETWORKS:
             typer.echo(network)
         raise typer.Exit
 

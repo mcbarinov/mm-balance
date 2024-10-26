@@ -88,6 +88,8 @@ def _print_group(config: Config, group: GroupResult) -> None:
         if isinstance(address.balance, str):
             rows.append([address.address, address.balance])
         else:
+            if config.skip_empty and address.balance.balance == Decimal(0):
+                continue
             balance_str = format_number(address.balance.balance, config.format_number_separator)
             row = [address.address, balance_str]
             if config.price:

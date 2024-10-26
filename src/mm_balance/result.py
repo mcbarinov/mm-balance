@@ -78,11 +78,12 @@ def _create_total(use_share: bool, groups: list[GroupResult]) -> Total:
             stablecoin_sum += usd_value  # TODO: or balance_value?
         total_usd_sum += usd_value
 
-    for ticker, usd_value in coin_usd_values.items():
-        if ticker in USD_STABLECOINS:
-            portfolio_share[ticker] = round(stablecoin_sum * 100 / total_usd_sum, 2)
-        else:
-            portfolio_share[ticker] = round(usd_value * 100 / total_usd_sum, 2)
+    if total_usd_sum > 0:
+        for ticker, usd_value in coin_usd_values.items():
+            if ticker in USD_STABLECOINS:
+                portfolio_share[ticker] = round(stablecoin_sum * 100 / total_usd_sum, 2)
+            else:
+                portfolio_share[ticker] = round(usd_value * 100 / total_usd_sum, 2)
 
     return Total(
         coin_balances=coin_balances,

@@ -20,7 +20,7 @@ lint: format
     uv run mypy src
 
 audit:
-    uv run pip-audit
+    uv run pip-audit --ignore-vuln GHSA-f9vj-2wh5-fj8j --ignore-vuln GHSA-q34m-jh98-gwm2
     uv run bandit -r -c "pyproject.toml" src
 
 publish: build

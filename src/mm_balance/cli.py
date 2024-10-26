@@ -34,6 +34,10 @@ def networks_callback(value: bool) -> None:
 @app.command()
 def cli(
     config_path: Annotated[pathlib.Path, typer.Argument()],
+    print_format: Annotated[PrintFormat | None, typer.Option("--format", "-f", help="Print format.")] = None,
+    skip_empty: Annotated[bool | None, typer.Option("--skip-empty", "-s", help="Skip empty balances.")] = None,
+    debug: Annotated[bool | None, typer.Option("--debug", "-d", help="Print debug info.")] = None,
+    price: Annotated[bool | None, typer.Option("--price/--no-price", help="Print prices.")] = None,
     _example: Annotated[bool | None, typer.Option("--example", callback=example_callback, help="Print a config example.")] = None,
     _networks: Annotated[
         bool | None, typer.Option("--networks", callback=networks_callback, help="Print supported networks.")
@@ -43,6 +47,15 @@ def cli(
     if config_path.name.endswith(".zip"):
         zip_password = getpass.getpass("zip password")
     config = Config.read_config(config_path, zip_password=zip_password)
+
+    if print_format is not None:
+        config.print_format = print_format
+    if debug is not None:
+        config.print_debug = debug
+    if skip_empty is not None:
+        config.skip_empty = skip_empty
+    if price is not None:
+        config.price = price
 
     if config.print_debug and config.print_format is PrintFormat.TABLE:
         table_format.print_nodes(config)
@@ -65,15 +78,6 @@ def cli(
         json_format.print_result(config, token_decimals, prices, workers, result)
     else:
         fatal("Unsupported print format")
-
-    # print_result(config, result)
-
-    # balances = Balances(config, token_decimals)
-    # balances.process()
-    #
-    # output.print_groups(balances, config, prices)
-    # output.print_total(config, balances, prices)
-    # output.print_errors(config, balances)
 
 
 if __name__ == "__main__":

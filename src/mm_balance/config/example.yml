@@ -70,4 +70,5 @@ addresses:
 #price: yes
 #skip_empty: no
 #print_debug: no
+#print_format: table # table, json
 #format_number_separator: ","

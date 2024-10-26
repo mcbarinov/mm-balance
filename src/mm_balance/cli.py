@@ -4,13 +4,15 @@ import pkgutil
 from typing import Annotated
 
 import typer
+from mm_std import PrintFormat, fatal
 
-from mm_balance import output
-from mm_balance.balances import Balances
 from mm_balance.config import Config
 from mm_balance.constants import NETWORKS
+from mm_balance.output.formats import json_format, table_format
 from mm_balance.price import Prices, get_prices
+from mm_balance.result import create_balances_result
 from mm_balance.token_decimals import get_token_decimals
+from mm_balance.workers import Workers
 
 app = typer.Typer(no_args_is_help=True, pretty_exceptions_enable=False, add_completion=False)
 
@@ -42,22 +44,36 @@ def cli(
         zip_password = getpass.getpass("zip password")
     config = Config.read_config(config_path, zip_password=zip_password)
 
-    if config.print_debug:
-        output.print_nodes(config)
+    if config.print_debug and config.print_format is PrintFormat.TABLE:
+        table_format.print_nodes(config)
 
     token_decimals = get_token_decimals(config)
-    if config.print_debug:
-        output.print_token_decimals(token_decimals)
+    if config.print_debug and config.print_format is PrintFormat.TABLE:
+        table_format.print_token_decimals(token_decimals)
 
     prices = get_prices(config) if config.price else Prices()
-    output.print_prices(config, prices)
+    if config.print_format is PrintFormat.TABLE:
+        table_format.print_prices(config, prices)
 
-    balances = Balances(config, token_decimals)
-    balances.process()
+    workers = Workers(config, token_decimals)
+    workers.process()
 
-    output.print_groups(balances, config, prices)
-    output.print_total(config, balances, prices)
-    output.print_errors(config, balances)
+    result = create_balances_result(config, prices, workers)
+    if config.print_format is PrintFormat.TABLE:
+        table_format.print_result(config, result, workers)
+    elif config.print_format is PrintFormat.JSON:
+        json_format.print_result(config, token_decimals, prices, workers, result)
+    else:
+        fatal("Unsupported print format")
+
+    # print_result(config, result)
+
+    # balances = Balances(config, token_decimals)
+    # balances.process()
+    #
+    # output.print_groups(balances, config, prices)
+    # output.print_total(config, balances, prices)
+    # output.print_errors(config, balances)
 
 
 if __name__ == "__main__":

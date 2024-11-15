@@ -59,6 +59,7 @@ def cli(
 
     if config.print_debug and config.print_format is PrintFormat.TABLE:
         table_format.print_nodes(config)
+        table_format.print_proxy_count(config)
 
     token_decimals = get_token_decimals(config)
     if config.print_debug and config.print_format is PrintFormat.TABLE:

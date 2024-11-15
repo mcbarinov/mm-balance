@@ -17,6 +17,9 @@ def print_nodes(config: Config) -> None:
     print_table("Nodes", ["network", "nodes"], rows)
 
 
+def print_proxy_count(config: Config) -> None:
+    print_table("Proxies", ["count"], [[len(config.proxies)]])
+
 def print_token_decimals(token_decimals: TokenDecimals) -> None:
     rows = []
     for network, decimals in token_decimals.items():

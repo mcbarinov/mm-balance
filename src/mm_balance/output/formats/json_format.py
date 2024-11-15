@@ -12,6 +12,7 @@ def print_result(config: Config, token_decimals: TokenDecimals, prices: Prices, 
     if config.print_debug:
         data["nodes"] = config.nodes
         data["token_decimals"] = token_decimals
+        data["proxies"] = len(config.proxies)
     if config.price:
         data["prices"] = prices
 

@@ -39,11 +39,11 @@ coins:
     addresses: binance_eth
 
   - ticker: USDC
-    comment: okx aptos
+    comment: swap.thala.apt
     network: aptos
     token_address: 0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDC
     token_decimals: 6
-    addresses: "0x834d639b10d20dcb894728aa4b9b572b2ea2d97073b10eacb111f338b20ea5d7" # for a single line it's necessary to use quotes
+    addresses: "0x48271d39d0b05bd6efca2278f22277d6fcc375504f9839fd73f74ace240861af" # for a single line it's necessary to use quotes
 
 
 addresses:

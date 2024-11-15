@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import os
 from decimal import Decimal
 from pathlib import Path
-from typing import Self
+from typing import Self, cast
 
 import pydash
 from mm_std import BaseConfig, PrintFormat, fatal, hr
@@ -97,6 +98,8 @@ class Config(BaseConfig):
         # load from proxies_url
         if self.proxies_url is not None:
             self.proxies = get_proxies(self.proxies_url)
+        elif os.getenv("MM_BALANCE_PROXIES_URL"):
+            self.proxies = get_proxies(cast(str, os.getenv("MM_BALANCE_PROXIES_URL")))
 
         # load addresses from address_group
         for group in self.groups:

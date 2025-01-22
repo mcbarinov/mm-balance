@@ -30,12 +30,10 @@ class Group(BaseConfig):
         result += " / " + self.network
         return result
 
-    @classmethod
     @field_validator("ticker", mode="after")
     def ticker_validator(cls, v: str) -> str:
         return v.upper()
 
-    @classmethod
     @field_validator("addresses", mode="before")
     def to_list_validator(cls, v: str | list[str] | None) -> list[str]:
         return cls.to_list_str_validator(v, unique=True, remove_comments=True, split_line=True)
@@ -69,7 +67,6 @@ class AddressGroup(BaseConfig):
     name: str
     addresses: list[str]
 
-    @classmethod
     @field_validator("addresses", mode="before")
     def to_list_validator(cls, v: str | list[str] | None) -> list[str]:
         return cls.to_list_str_validator(v, unique=True, remove_comments=True, split_line=True)

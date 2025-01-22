@@ -1,13 +1,13 @@
 [project]
 name = "mm-balance"
-version = "0.1.17"
+version = "0.1.18"
 description = ""
 requires-python = ">=3.12"
 dependencies = [
-    "mm-btc==0.2.0",
-    "mm-eth==0.2.0",
-    "mm-solana==0.2.0",
-    "mm-aptos==0.1.4",
+    "mm-btc==0.2.1",
+    "mm-eth==0.2.3",
+    "mm-solana==0.2.3",
+    "mm-aptos==0.1.5",
     "typer>=0.15.1",
 ]
 [project.scripts]
@@ -37,24 +37,35 @@ exclude = ["^tests/", "^tmp/"]
 [tool.ruff]
 line-length = 130
 target-version = "py313"
-lint.select = [
-    "F", # Pyflakes
-    "E", "W", # pycodestyle
-    "UP", # pyupgrade
-    "B", # flake8-bugbear
-    "A", # flake8-builtins
-    "COM", # flake8-commas
-    "C40", # flake8-comprehensions
-    "G", # flake8-logging-format
-    "PIE", # flake8-pie
-    "T20", # flake8-print
-    "RUF", # Ruff-specific rules
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "A005", # flake8-builtins: stdlib-module-shadowing
+    "ERA001", # eradicate: commented-out-code
+    "PT", # flake8-pytest-style
+    "D", # pydocstyle
+    "FIX", # flake8-fixme
+    "PLR0911", # pylint: too-many-return-statements
+    "PLR0912", # pylint: too-many-branches
+    "PLR0913", # pylint: too-many-arguments
+    "PLR2004", # pylint: magic-value-comparison
+    "PLC0414", # pylint: useless-import-alias
+    "FBT", # flake8-boolean-trap
+    "EM", # flake8-errmsg
+    "TRY003", # tryceratops: raise-vanilla-args
+    "C901", # mccabe: complex-structure,
+    "BLE001", # flake8-blind-except
+    "S311", # bandit: suspicious-non-cryptographic-random-usage
+    "TD002", # flake8-todos: missing-todo-author
+    "TD003", # flake8-todos: missing-todo-link
+    "RET503", # flake8-return: implicit-return
+    "COM812", # it's used in ruff formatter
 ]
-lint.ignore = [
-    "A003", # builtin-attribute-shadowing
-    "COM812",
-    "RUF012"
-]
+[tool.ruff.lint.per-file-ignores]
+"tests/*.py" = ["ANN", "S"]
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
 
 [tool.bandit]
 exclude_dirs = ["tests"]

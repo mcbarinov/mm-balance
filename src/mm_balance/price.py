@@ -31,7 +31,6 @@ def get_prices(config: Config) -> Prices:
     url = f"https://api.coingecko.com/api/v3/simple/price?ids={','.join(coingecko_map.values())}&vs_currencies=usd"
     for _ in range(RETRIES_COINGECKO_PRICES):
         res = hr(url, proxy=random_str_choice(config.proxies))
-        print(res)
         if res.code != 200:
             continue
 

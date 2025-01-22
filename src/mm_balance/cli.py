@@ -46,7 +46,7 @@ def cli(
     zip_password = ""  # nosec
     if config_path.name.endswith(".zip"):
         zip_password = getpass.getpass("zip password")
-    config = Config.read_config(config_path, zip_password=zip_password)
+    config = Config.read_config_or_exit(config_path, zip_password=zip_password)
 
     if print_format is not None:
         config.print_format = print_format

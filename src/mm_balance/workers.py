@@ -1,14 +1,17 @@
 from dataclasses import dataclass
 from decimal import Decimal
+from typing import TYPE_CHECKING
 
 from mm_std import ConcurrentTasks, PrintFormat, Result
-from rich.progress import TaskID
 
 from mm_balance.config import Config
 from mm_balance.constants import NETWORK_APTOS, NETWORK_BITCOIN, NETWORK_SOLANA, Network
 from mm_balance.output import utils
 from mm_balance.rpc import aptos, btc, evm, solana
 from mm_balance.token_decimals import TokenDecimals
+
+if TYPE_CHECKING:
+    from rich.progress import TaskID
 
 
 @dataclass
@@ -20,7 +23,7 @@ class Task:
 
 
 class Workers:
-    def __init__(self, config: Config, token_decimals: TokenDecimals):
+    def __init__(self, config: Config, token_decimals: TokenDecimals) -> None:
         self.config = config
         self.token_decimals = token_decimals
         self.tasks: dict[Network, list[Task]] = {network: [] for network in config.networks()}
@@ -49,9 +52,7 @@ class Workers:
     def get_errors(self) -> list[Task]:
         result = []
         for network in self.tasks:
-            for task in self.tasks[network]:
-                if task.balance is not None and task.balance.is_err():
-                    result.append(task)
+            result.extend([task for task in self.tasks[network] if task.balance is not None and task.balance.is_err()])
         return result
 
     def _process_network(self, network: Network) -> None:

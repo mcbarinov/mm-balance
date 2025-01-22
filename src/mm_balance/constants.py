@@ -1,5 +1,3 @@
-from typing import Any
-
 from pydantic import GetCoreSchemaHandler
 from pydantic_core import CoreSchema, core_schema
 
@@ -11,11 +9,13 @@ TIMEOUT_DECIMALS = 5
 
 
 class Network(str):
+    __slots__ = ()
+
     def is_evm_network(self) -> bool:
         return self in [NETWORK_ETHEREUM, NETWORK_ARBITRUM_ONE, NETWORK_OP_MAINNET] or self.startswith("evm-")
 
     @classmethod
-    def __get_pydantic_core_schema__(cls, _source_type: Any, handler: GetCoreSchemaHandler) -> CoreSchema:
+    def __get_pydantic_core_schema__(cls, _source_type: object, handler: GetCoreSchemaHandler) -> CoreSchema:
         return core_schema.no_info_after_validator_function(cls, handler(str))
 
 

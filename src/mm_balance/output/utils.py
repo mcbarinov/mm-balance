@@ -7,7 +7,7 @@ def format_number(value: Decimal, separator: str, extra: str | None = None) -> s
     str_value = f"{value:,}".replace(",", separator)
     if extra == "$":
         return "$" + str_value
-    elif extra == "%":
+    if extra == "%":
         return str_value + "%"
     return str_value
 

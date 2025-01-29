@@ -3,23 +3,25 @@ from __future__ import annotations
 import os
 from decimal import Decimal
 from pathlib import Path
-from typing import Self, cast
+from typing import Annotated, Self, cast
 
+import mm_crypto_utils
 import pydash
-from mm_std import BaseConfig, PrintFormat, fatal, hr
-from pydantic import Field, field_validator, model_validator
+from mm_crypto_utils import ConfigValidators
+from mm_std import BaseConfig, PrintFormat, fatal
+from pydantic import BeforeValidator, Field, StringConstraints, model_validator
 
 from mm_balance.constants import DEFAULT_NODES, TOKEN_ADDRESS, Network
 
 
 class Group(BaseConfig):
     comment: str = ""
-    ticker: str
+    ticker: Annotated[str, StringConstraints(to_upper=True)]
     network: Network
     token_address: str | None = None  # If None, it's a native token, for example ETH
     token_decimals: int | None = None
     coingecko_id: str | None = None
-    addresses: list[str] = Field(default_factory=list)
+    addresses: Annotated[list[str], BeforeValidator(ConfigValidators.addresses(unique=True))]
     share: Decimal = Decimal(1)
 
     @property
@@ -29,20 +31,6 @@ class Group(BaseConfig):
             result += " / " + self.comment
         result += " / " + self.network
         return result
-
-    @field_validator("ticker", mode="after")
-    def ticker_validator(cls, v: str) -> str:
-        return v.upper()
-
-    @field_validator("addresses", mode="before")
-    def to_list_validator(cls, v: str | list[str] | None) -> list[str]:
-        return cls.to_list_str_validator(v, unique=True, remove_comments=True, split_line=True)
-
-    # @model_validator(mode="before")
-    # def before_all(cls, data: Any) -> Any:
-    #     if "network" not in data:
-    #         data["network"] = detect_network(data["coin"])
-    #     return data
 
     @model_validator(mode="after")
     def final_validator(self) -> Self:
@@ -65,11 +53,7 @@ class Group(BaseConfig):
 
 class AddressGroup(BaseConfig):
     name: str
-    addresses: list[str]
-
-    @field_validator("addresses", mode="before")
-    def to_list_validator(cls, v: str | list[str] | None) -> list[str]:
-        return cls.to_list_str_validator(v, unique=True, remove_comments=True, split_line=True)
+    addresses: Annotated[list[str], BeforeValidator(ConfigValidators.addresses(unique=True))]
 
 
 class Config(BaseConfig):
@@ -97,9 +81,9 @@ class Config(BaseConfig):
     def final_validator(self) -> Self:
         # load from proxies_url
         if self.proxies_url is not None:
-            self.proxies = get_proxies(self.proxies_url)
+            self.proxies += mm_crypto_utils.fetch_proxies_or_fatal(self.proxies_url)
         elif os.getenv("MM_BALANCE_PROXIES_URL"):
-            self.proxies = get_proxies(cast(str, os.getenv("MM_BALANCE_PROXIES_URL")))
+            self.proxies += mm_crypto_utils.fetch_proxies_or_fatal(cast(str, os.getenv("MM_BALANCE_PROXIES_URL")))
 
         # load addresses from address_group
         for group in self.groups:
@@ -121,17 +105,6 @@ class Config(BaseConfig):
 def detect_token_address(ticker: str, network: Network) -> str | None:
     if network in TOKEN_ADDRESS:
         return TOKEN_ADDRESS[network].get(ticker)
-
-
-def get_proxies(proxies_url: str) -> list[str]:
-    try:
-        res = hr(proxies_url)
-        if res.is_error():
-            fatal(f"Can't get proxies: {res.error}")
-        proxies = [p.strip() for p in res.body.splitlines() if p.strip()]
-        return pydash.uniq(proxies)
-    except Exception as err:
-        fatal(f"Can't get  proxies: {err}")
 
 
 def get_address_group_by_name(address_groups: list[AddressGroup], name: str) -> AddressGroup | None:

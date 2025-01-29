@@ -1,17 +1,14 @@
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import TYPE_CHECKING
 
 from mm_std import ConcurrentTasks, PrintFormat, Result
+from rich.progress import TaskID
 
 from mm_balance.config import Config
 from mm_balance.constants import NETWORK_APTOS, NETWORK_BITCOIN, NETWORK_SOLANA, Network
 from mm_balance.output import utils
 from mm_balance.rpc import aptos, btc, evm, solana
 from mm_balance.token_decimals import TokenDecimals
-
-if TYPE_CHECKING:
-    from rich.progress import TaskID
 
 
 @dataclass

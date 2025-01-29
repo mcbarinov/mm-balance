@@ -1,12 +1,13 @@
 [project]
 name = "mm-balance"
-version = "0.1.19"
+version = "0.1.20"
 description = ""
 requires-python = ">=3.12"
 dependencies = [
+    "mm-crypto-utils==0.0.13",
     "mm-btc==0.2.1",
-    "mm-eth==0.2.3",
-    "mm-solana==0.2.3",
+    "mm-eth==0.2.5",
+    "mm-solana==0.2.4",
     "mm-aptos==0.1.5",
     "typer>=0.15.1",
 ]
@@ -21,7 +22,7 @@ build-backend = "hatchling.build"
 dev-dependencies = [
     "pytest~=8.3.4",
     "pytest-xdist~=3.6.1",
-    "ruff~=0.9.2",
+    "ruff~=0.9.3",
     "pip-audit~=2.7.3",
     "bandit~=1.8.2",
     "mypy~=1.14.1",
@@ -40,6 +41,7 @@ target-version = "py313"
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [
+    "TC", # flake8-type-checking, TYPE_CHECKING is dangerous, for example it doesn't work with pydantic
     "A005", # flake8-builtins: stdlib-module-shadowing
     "ERA001", # eradicate: commented-out-code
     "PT", # flake8-pytest-style

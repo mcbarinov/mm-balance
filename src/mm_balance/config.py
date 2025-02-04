@@ -43,14 +43,24 @@ class Group(BaseConfig):
         return self
 
     def process_addresses(self, address_groups: list[AddressGroup]) -> None:
-        addresses: list[str] = []
-        for address in self.addresses:
-            if address_group := pydash.find(address_groups, lambda g: g.name == address):  # noqa: B023
-                addresses.extend(address_group.addresses)
+        result = []
+        for line in self.addresses:
+            if line.startswith("file:"):
+                path = Path(line.removeprefix("file:").strip()).expanduser()
+                if path.is_file():
+                    result += path.read_text().strip().splitlines()
+                else:
+                    fatal(f"File with addresses not found: {path}")
+            elif line.startswith("group:"):
+                group_name = line.removeprefix("group:").strip()
+                address_group = next((ag for ag in address_groups if ag.name == group_name), None)
+                if address_group is None:
+                    raise ValueError(f"Address group not found: {group_name}")
+                result += address_group.addresses
             else:
-                # TODO: check address is valid
-                addresses.append(address)
-        self.addresses = pydash.uniq(process_file_addresses(addresses))
+                result.append(line)
+        # TODO: check address is valid. There is network info in the group
+        self.addresses = pydash.uniq(result)
 
 
 class AddressGroup(BaseConfig):
@@ -103,21 +113,3 @@ class Config(BaseConfig):
 def detect_token_address(ticker: str, network: Network) -> str | None:
     if network in TOKEN_ADDRESS:
         return TOKEN_ADDRESS[network].get(ticker)
-
-
-def get_address_group_by_name(address_groups: list[AddressGroup], name: str) -> AddressGroup | None:
-    return pydash.find(address_groups, lambda g: g.name == name)
-
-
-def process_file_addresses(addresses: list[str]) -> list[str]:
-    result = []
-    for address in addresses:
-        if address.startswith("file://"):
-            path = Path(address.removeprefix("file://"))
-            if path.is_file():
-                result.extend(path.read_text().strip().splitlines())
-            else:
-                fatal(f"File with addresses not found: {path}")
-        else:
-            result.append(address)
-    return result

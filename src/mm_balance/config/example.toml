@@ -76,7 +76,7 @@ print_debug = false
 print_format = "table"  # table, json
 format_number_separator = ","
 proxies = """
-env_url: MM_BALANCE_PROXIES_URL
+# env_url: MM_BALANCE_PROXIES_URL
 # socks5://usr:pass@site.com:1234
 # http://site.com:1234
 """

@@ -9,11 +9,11 @@ from mm_balance.workers import Workers
 
 def print_result(config: Config, token_decimals: TokenDecimals, prices: Prices, workers: Workers, result: BalancesResult) -> None:
     data: dict[str, object] = {}
-    if config.print_debug:
+    if config.settings.print_debug:
         data["nodes"] = config.nodes
         data["token_decimals"] = token_decimals
-        data["proxies"] = len(config.proxies)
-    if config.price:
+        data["proxies"] = len(config.settings.proxies)
+    if config.settings.price:
         data["prices"] = prices
 
     data["groups"] = result.groups

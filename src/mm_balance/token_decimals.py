@@ -14,7 +14,7 @@ class TokenDecimals(dict[Network, dict[str | None, int]]):  # {network: {None: 1
 
 def get_token_decimals(config: Config) -> TokenDecimals:
     result = TokenDecimals(config.networks())
-    proxies = config.proxies
+    proxies = config.settings.proxies
 
     for group in config.groups:
         # token_decimals is already known

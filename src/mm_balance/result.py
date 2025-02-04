@@ -106,7 +106,7 @@ def _create_group_result(config: Config, group: Group, tasks: list[Task], prices
             coin_value = task.balance.ok
             usd_value = Decimal(0)
             if group.ticker in prices:
-                usd_value = round(coin_value * prices[group.ticker], config.round_ndigits)
+                usd_value = round(coin_value * prices[group.ticker], config.settings.round_ndigits)
             balance = Balance(balance=coin_value, usd_value=usd_value)
             balance_sum += balance.balance
             usd_sum += balance.usd_value

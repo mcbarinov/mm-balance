@@ -1,17 +1,19 @@
 from __future__ import annotations
 
-import os
 from decimal import Decimal
 from pathlib import Path
-from typing import Annotated, Self, cast
+from typing import Annotated, Self
 
-import mm_crypto_utils
 import pydash
 from mm_crypto_utils import ConfigValidators
 from mm_std import BaseConfig, PrintFormat, fatal
 from pydantic import BeforeValidator, Field, StringConstraints, model_validator
 
 from mm_balance.constants import DEFAULT_NODES, TOKEN_ADDRESS, Network
+
+
+class Validators(ConfigValidators):
+    pass
 
 
 class Group(BaseConfig):
@@ -21,7 +23,7 @@ class Group(BaseConfig):
     token_address: str | None = None  # If None, it's a native token, for example ETH
     token_decimals: int | None = None
     coingecko_id: str | None = None
-    addresses: Annotated[list[str], BeforeValidator(ConfigValidators.addresses(unique=True))]
+    addresses: Annotated[list[str], BeforeValidator(Validators.addresses(unique=True))]
     share: Decimal = Decimal(1)
 
     @property
@@ -56,20 +58,22 @@ class AddressGroup(BaseConfig):
     addresses: Annotated[list[str], BeforeValidator(ConfigValidators.addresses(unique=True))]
 
 
-class Config(BaseConfig):
-    groups: list[Group] = Field(alias="coins")
-    addresses: list[AddressGroup] = Field(default_factory=list)
-
-    proxies_url: str | None = None
-    proxies: list[str] = Field(default_factory=list)
+class Settings(BaseConfig):
+    proxies: Annotated[list[str], Field(default_factory=list), BeforeValidator(Validators.proxies())]
     round_ndigits: int = 4
-    nodes: dict[Network, list[str]] = Field(default_factory=dict)
     print_format: PrintFormat = PrintFormat.TABLE
     price: bool = True
     skip_empty: bool = False  # don't print the address with an empty balance
     print_debug: bool = False  # print debug info: nodes, token_decimals
-    format_number_separator: str = ","  #  as thousands separators
+    format_number_separator: str = ","  # as thousands separators
+
+
+class Config(BaseConfig):
+    groups: list[Group] = Field(alias="coins")
+    addresses: list[AddressGroup] = Field(default_factory=list)
+    nodes: dict[Network, list[str]] = Field(default_factory=dict)
     workers: dict[Network, int] = Field(default_factory=dict)
+    settings: Settings = Field(default_factory=Settings)  # type: ignore[arg-type]
 
     def has_share(self) -> bool:
         return any(g.share != Decimal(1) for g in self.groups)
@@ -79,12 +83,6 @@ class Config(BaseConfig):
 
     @model_validator(mode="after")
     def final_validator(self) -> Self:
-        # load from proxies_url
-        if self.proxies_url is not None:
-            self.proxies += mm_crypto_utils.fetch_proxies_or_fatal(self.proxies_url)
-        elif os.getenv("MM_BALANCE_PROXIES_URL"):
-            self.proxies += mm_crypto_utils.fetch_proxies_or_fatal(cast(str, os.getenv("MM_BALANCE_PROXIES_URL")))
-
         # load addresses from address_group
         for group in self.groups:
             group.process_addresses(self.addresses)

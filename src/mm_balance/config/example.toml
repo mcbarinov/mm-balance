@@ -1,0 +1,83 @@
+[[coins]]
+ticker = "SOL"
+network = "solana"
+addresses = "2ojv9BAiHUrvsm9gxDe7fJSzbNZSJcxZvf8dqmWGHG8S"  # binance
+
+[[coins]]
+ticker = "USDT"
+network = "solana"
+addresses = "2ojv9BAiHUrvsm9gxDe7fJSzbNZSJcxZvf8dqmWGHG8S"  # binance
+
+[[coins]]
+ticker = "BTC"
+network = "bitcoin"
+comment = "coldwallets"
+addresses = """
+34xp4vRoCGJym3xR7yCVPFHoCNxv4Twseo # binance
+bc1qgdjqv0av3q56jvd82tkdjpy7gdp9ut8tlqmgrpmv24sq90ecnvqqjwvw97 # bitfinex
+bc1ql49ydapnjafl5t2cp9zqpjwe6pdgmxy98859v2 # robinhood
+"""
+share = 0.1
+
+[[coins]]
+ticker = "ETH"
+network = "ethereum"
+comment = "okx"
+addresses = "okx_eth"
+
+[[coins]]
+ticker = "USDT"
+network = "ethereum"
+comment = "okx"
+addresses = "okx_eth"
+
+[[coins]]
+ticker = "ETH"
+network = "ethereum"
+comment = "binance"
+addresses = "binance_eth"
+
+[[coins]]
+ticker = "USDT"
+network = "ethereum"
+comment = "binance"
+addresses = "binance_eth"
+
+[[coins]]
+ticker = "USDC"
+network = "aptos"
+comment = "swap.thala.apt"
+token_address = "0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDC"
+token_decimals = 6
+addresses = "0x48271d39d0b05bd6efca2278f22277d6fcc375504f9839fd73f74ace240861af"
+
+[[addresses]]
+name = "okx_eth"
+addresses = """
+0xf59869753f41db720127ceb8dbb8afaf89030de4
+0x65a0947ba5175359bb457d3b34491edf4cbf7997
+0xe9172daf64b05b26eb18f07ac8d6d723acb48f99
+0x4d19c0a5357bc48be0017095d3c871d9afc3f21d
+"""
+
+[[addresses]]
+name = "binance_eth"
+addresses = """
+0xf977814e90da44bfa03b6295a0616a897441acec
+0x47ac0fb4f2d84898e4d9e7b4dab3c24507a6d503
+"""
+
+
+[settings] # all records are optional
+round_ndigits = 4
+price = true
+skip_empty = false
+print_debug = false
+print_format = "table"  # table, json
+format_number_separator = ","
+proxies = """
+env_url: MM_BALANCE_PROXIES_URL
+# socks5://usr:pass@site.com:1234
+# http://site.com:1234
+"""
+

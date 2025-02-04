@@ -1,14 +1,13 @@
 [project]
 name = "mm-balance"
-version = "0.1.20"
+version = "0.2.0"
 description = ""
 requires-python = ">=3.12"
 dependencies = [
-    "mm-crypto-utils==0.0.13",
-    "mm-btc==0.2.1",
-    "mm-eth==0.2.5",
-    "mm-solana==0.2.4",
-    "mm-aptos==0.1.5",
+    "mm-btc==0.3.0",
+    "mm-eth==0.3.0",
+    "mm-sol==0.3.0",
+    "mm-aptos==0.2.0",
     "typer>=0.15.1",
 ]
 [project.scripts]
@@ -22,11 +21,10 @@ build-backend = "hatchling.build"
 dev-dependencies = [
     "pytest~=8.3.4",
     "pytest-xdist~=3.6.1",
-    "ruff~=0.9.3",
+    "ruff~=0.9.4",
     "pip-audit~=2.7.3",
     "bandit~=1.8.2",
     "mypy~=1.14.1",
-    "types-PyYAML~=6.0.12.20241230",
 ]
 
 [tool.mypy]

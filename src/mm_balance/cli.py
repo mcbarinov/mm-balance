@@ -19,7 +19,7 @@ app = typer.Typer(no_args_is_help=True, pretty_exceptions_enable=False, add_comp
 
 def example_callback(value: bool) -> None:
     if value:
-        data = pkgutil.get_data(__name__, "config/example.yml")
+        data = pkgutil.get_data(__name__, "config/example.toml")
         typer.echo(data)
         raise typer.Exit
 
@@ -37,6 +37,7 @@ def cli(
     print_format: Annotated[PrintFormat | None, typer.Option("--format", "-f", help="Print format.")] = None,
     skip_empty: Annotated[bool | None, typer.Option("--skip-empty", "-s", help="Skip empty balances.")] = None,
     debug: Annotated[bool | None, typer.Option("--debug", "-d", help="Print debug info.")] = None,
+    print_config: Annotated[bool | None, typer.Option("--config", "-c", help="Print config and exit.")] = None,
     price: Annotated[bool | None, typer.Option("--price/--no-price", help="Print prices.")] = None,
     _example: Annotated[bool | None, typer.Option("--example", callback=example_callback, help="Print a config example.")] = None,
     _networks: Annotated[
@@ -46,36 +47,38 @@ def cli(
     zip_password = ""  # nosec
     if config_path.name.endswith(".zip"):
         zip_password = getpass.getpass("zip password")
-    config = Config.read_config_or_exit(config_path, zip_password=zip_password)
+    config = Config.read_toml_config_or_exit(config_path, zip_password=zip_password)
+    if print_config:
+        config.print_and_exit()
 
     if print_format is not None:
-        config.print_format = print_format
+        config.settings.print_format = print_format
     if debug is not None:
-        config.print_debug = debug
+        config.settings.print_debug = debug
     if skip_empty is not None:
-        config.skip_empty = skip_empty
+        config.settings.skip_empty = skip_empty
     if price is not None:
-        config.price = price
+        config.settings.price = price
 
-    if config.print_debug and config.print_format is PrintFormat.TABLE:
+    if config.settings.print_debug and config.settings.print_format is PrintFormat.TABLE:
         table_format.print_nodes(config)
         table_format.print_proxy_count(config)
 
     token_decimals = get_token_decimals(config)
-    if config.print_debug and config.print_format is PrintFormat.TABLE:
+    if config.settings.print_debug and config.settings.print_format is PrintFormat.TABLE:
         table_format.print_token_decimals(token_decimals)
 
-    prices = get_prices(config) if config.price else Prices()
-    if config.print_format is PrintFormat.TABLE:
+    prices = get_prices(config) if config.settings.price else Prices()
+    if config.settings.print_format is PrintFormat.TABLE:
         table_format.print_prices(config, prices)
 
     workers = Workers(config, token_decimals)
     workers.process()
 
     result = create_balances_result(config, prices, workers)
-    if config.print_format is PrintFormat.TABLE:
+    if config.settings.print_format is PrintFormat.TABLE:
         table_format.print_result(config, result, workers)
-    elif config.print_format is PrintFormat.JSON:
+    elif config.settings.print_format is PrintFormat.JSON:
         json_format.print_result(config, token_decimals, prices, workers, result)
     else:
         fatal("Unsupported print format")

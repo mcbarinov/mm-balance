@@ -24,7 +24,7 @@ class Workers:
         self.config = config
         self.token_decimals = token_decimals
         self.tasks: dict[Network, list[Task]] = {network: [] for network in config.networks()}
-        self.progress_bar = utils.create_progress_bar(config.print_format is not PrintFormat.TABLE)
+        self.progress_bar = utils.create_progress_bar(config.settings.print_format is not PrintFormat.TABLE)
         self.progress_bar_task: dict[Network, TaskID] = {}
 
         for idx, group in enumerate(config.groups):
@@ -63,8 +63,8 @@ class Workers:
 
     def _get_balance(self, network: Network, wallet_address: str, token_address: str | None) -> Result[Decimal]:
         nodes = self.config.nodes[network]
-        round_ndigits = self.config.round_ndigits
-        proxies = self.config.proxies
+        round_ndigits = self.config.settings.round_ndigits
+        proxies = self.config.settings.proxies
         token_decimals = self.token_decimals[network][token_address]
 
         if network.is_evm_network():

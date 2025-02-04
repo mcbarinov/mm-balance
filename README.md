@@ -2,13 +2,8 @@
 
 ### Install on Ubuntu
 ```shell
-apt update && apt-get install build-essential libgmp3-dev python3-dev -y
-
-curl -LsSf https://astral.sh/uv/install.sh | sh
-# Restart your shell or run: source $HOME/.cargo/env
-
+sudo apt update && sudo apt-get install build-essential libgmp3-dev python3-dev -y
+sudo curl -LsSf https://astral.sh/uv/install.sh | sh
+source $HOME/.local/bin/env
 uv tool install mm-balance
-
-uv tool update-shell
-# Restart your shell
 ```

@@ -93,6 +93,12 @@ class Config(BaseConfig):
 
     @model_validator(mode="after")
     def final_validator(self) -> Self:
+        # check all addresses has uniq name
+        address_group_names = [ag.name for ag in self.addresses]
+        non_uniq_names = [name for name in address_group_names if address_group_names.count(name) > 1]
+        if non_uniq_names:
+            raise ValueError("There are non-unique address group names: " + ", ".join(non_uniq_names))
+
         # load addresses from address_group
         for group in self.groups:
             group.process_addresses(self.addresses)

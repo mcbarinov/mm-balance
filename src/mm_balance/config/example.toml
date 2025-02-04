@@ -23,25 +23,25 @@ share = 0.1
 ticker = "ETH"
 network = "ethereum"
 comment = "okx"
-addresses = "okx_eth"
+addresses = "group: okx_eth"
 
 [[coins]]
 ticker = "USDT"
 network = "ethereum"
 comment = "okx"
-addresses = "okx_eth"
+addresses = "group: okx_eth"
 
 [[coins]]
 ticker = "ETH"
 network = "ethereum"
 comment = "binance"
-addresses = "binance_eth"
+addresses = "group: binance_eth"
 
 [[coins]]
 ticker = "USDT"
 network = "ethereum"
 comment = "binance"
-addresses = "binance_eth"
+addresses = "group: binance_eth"
 
 [[coins]]
 ticker = "USDC"
@@ -50,6 +50,7 @@ comment = "swap.thala.apt"
 token_address = "0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDC"
 token_decimals = 6
 addresses = "0x48271d39d0b05bd6efca2278f22277d6fcc375504f9839fd73f74ace240861af"
+
 
 [[addresses]]
 name = "okx_eth"
@@ -80,4 +81,3 @@ proxies = """
 # socks5://usr:pass@site.com:1234
 # http://site.com:1234
 """
-

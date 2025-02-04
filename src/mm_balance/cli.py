@@ -1,4 +1,5 @@
 import getpass
+import importlib.metadata
 import pathlib
 import pkgutil
 from typing import Annotated
@@ -15,6 +16,12 @@ from mm_balance.token_decimals import get_token_decimals
 from mm_balance.workers import Workers
 
 app = typer.Typer(no_args_is_help=True, pretty_exceptions_enable=False, add_completion=False)
+
+
+def version_callback(value: bool) -> None:
+    if value:
+        typer.echo(f"mm-balance: v{importlib.metadata.version('mm-balance')}")
+        raise typer.Exit
 
 
 def example_callback(value: bool) -> None:
@@ -43,6 +50,7 @@ def cli(
     _networks: Annotated[
         bool | None, typer.Option("--networks", callback=networks_callback, help="Print supported networks.")
     ] = None,
+    _version: bool = typer.Option(None, "--version", callback=version_callback, is_eager=True),
 ) -> None:
     zip_password = ""  # nosec
     if config_path.name.endswith(".zip"):

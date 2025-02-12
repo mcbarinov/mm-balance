@@ -5,7 +5,7 @@ import pkgutil
 from typing import Annotated
 
 import typer
-from mm_std import PrintFormat, fatal
+from mm_std import PrintFormat, fatal, pretty_print_toml
 
 from mm_balance.config import Config
 from mm_balance.constants import NETWORKS
@@ -27,7 +27,9 @@ def version_callback(value: bool) -> None:
 def example_callback(value: bool) -> None:
     if value:
         data = pkgutil.get_data(__name__, "config/example.toml")
-        typer.echo(data)
+        if data is None:
+            fatal("Example config not found")
+        pretty_print_toml(data.decode("utf-8"))
         raise typer.Exit
 
 

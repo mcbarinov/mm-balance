@@ -4,6 +4,7 @@ from mm_sol import balance, token
 from mm_std import Ok, Result
 
 from mm_balance.constants import RETRIES_BALANCE, RETRIES_DECIMALS, TIMEOUT_BALANCE, TIMEOUT_DECIMALS
+from mm_balance.utils import scale_and_round
 
 
 def get_balance(
@@ -17,8 +18,7 @@ def get_balance(
         res = balance.get_token_balance_with_retries(
             nodes, wallet, token, retries=RETRIES_BALANCE, timeout=TIMEOUT_BALANCE, proxies=proxies
         )
-
-    return res.and_then(lambda b: Ok(round(Decimal(b / 10**decimals), round_ndigits)))
+    return res.and_then(lambda b: Ok(scale_and_round(b, decimals, round_ndigits)))
 
 
 def get_token_decimals(nodes: list[str], token_address: str, proxies: list[str]) -> Result[int]:

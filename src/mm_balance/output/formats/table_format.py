@@ -33,7 +33,7 @@ def print_prices(config: Config, prices: Prices) -> None:
         rows = []
         for ticker, price in prices.items():
             rows.append(
-                [ticker, format_number(round(price, config.settings.round_ndigits), config.settings.format_number_separator, "$")]
+                [ticker, format_number(price, config.settings.format_number_separator, "$", config.settings.round_ndigits)]
             )
         print_table("Prices", ["coin", "usd"], rows)
 

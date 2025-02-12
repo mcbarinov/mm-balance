@@ -3,7 +3,9 @@ from decimal import Decimal
 from rich.progress import BarColumn, MofNCompleteColumn, Progress, TaskID, TextColumn
 
 
-def format_number(value: Decimal, separator: str, extra: str | None = None) -> str:
+def format_number(value: Decimal, separator: str, extra: str | None = None, round_ndigits: int | None = None) -> str:
+    if round_ndigits is not None and value > 0:
+        value = round(value, round_ndigits)
     str_value = f"{value:,}".replace(",", separator)
     if extra == "$":
         return "$" + str_value

@@ -7,6 +7,7 @@ from mm_std import Ok
 from mm_balance.config import Config, Group
 from mm_balance.constants import USD_STABLECOINS, Network
 from mm_balance.price import Prices
+from mm_balance.utils import round_decimal
 from mm_balance.workers import Task, Workers
 
 
@@ -106,7 +107,7 @@ def _create_group_result(config: Config, group: Group, tasks: list[Task], prices
             coin_value = task.balance.ok
             usd_value = Decimal(0)
             if group.ticker in prices:
-                usd_value = round(coin_value * prices[group.ticker], config.settings.round_ndigits)
+                usd_value = round_decimal(coin_value * prices[group.ticker], config.settings.round_ndigits)
             balance = Balance(balance=coin_value, usd_value=usd_value)
             balance_sum += balance.balance
             usd_sum += balance.usd_value

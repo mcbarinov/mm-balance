@@ -18,12 +18,12 @@ def get_token_decimals(config: Config) -> TokenDecimals:
 
     for group in config.groups:
         # token_decimals is already known
-        if group.token_decimals is not None:
-            result[group.network][group.token_address] = group.token_decimals
+        if group.decimals is not None:
+            result[group.network][group.token] = group.decimals
             continue
 
         # get token_decimals for known native tokens
-        if group.token_address is None:
+        if group.token is None:
             if group.network.is_evm_network():
                 result[group.network][None] = 18
             elif group.network == NETWORK_SOLANA:
@@ -36,18 +36,18 @@ def get_token_decimals(config: Config) -> TokenDecimals:
 
         # get token_decimals via RPC
         # TODO: group.token_address must be in normalized form, otherwise it can be different for the same token
-        if group.token_address in result[group.network]:
+        if group.token in result[group.network]:
             continue  # don't request for a token_decimals twice
 
         nodes = config.nodes[group.network]
         if group.network.is_evm_network():
-            res = evm.get_token_decimals(nodes, group.token_address, proxies)
+            res = evm.get_token_decimals(nodes, group.token, proxies)
         elif group.network == NETWORK_SOLANA:
-            res = solana.get_token_decimals(nodes, group.token_address, proxies)
+            res = solana.get_token_decimals(nodes, group.token, proxies)
         else:
-            fatal(f"unsupported network: {group.network}. Cant get token decimals for {group.token_address}")
+            fatal(f"unsupported network: {group.network}. Cant get token decimals for {group.token}")
         if isinstance(res, Err):
-            fatal(f"can't get decimals for token {group.ticker} / {group.token_address}, error={res.err}")
-        result[group.network][group.token_address] = res.ok
+            fatal(f"can't get decimals for token {group.ticker} / {group.token}, error={res.err}")
+        result[group.network][group.token] = res.ok
 
     return result

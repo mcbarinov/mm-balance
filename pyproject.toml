@@ -5,7 +5,7 @@ description = ""
 requires-python = ">=3.12"
 dependencies = [
     "mm-btc==0.3.0",
-    "mm-eth==0.5.2",
+    "mm-eth==0.5.3",
     "mm-sol==0.5.1",
     "mm-aptos==0.2.0",
     "typer>=0.15.1",

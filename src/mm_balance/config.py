@@ -20,8 +20,8 @@ class Group(BaseConfig):
     comment: str = ""
     ticker: Annotated[str, StringConstraints(to_upper=True)]
     network: Network
-    token_address: str | None = None  # If None, it's a native token, for example ETH
-    token_decimals: int | None = None
+    token: str | None = None  # Token address. If None, it's a native token, for example ETH
+    decimals: int | None = None
     coingecko_id: str | None = None
     addresses: Annotated[list[str], BeforeValidator(Validators.addresses(unique=True))]
     share: Decimal = Decimal(1)
@@ -36,10 +36,10 @@ class Group(BaseConfig):
 
     @model_validator(mode="after")
     def final_validator(self) -> Self:
-        if self.token_address is None:
-            self.token_address = detect_token_address(self.ticker, self.network)
-        if self.token_address is not None and self.network.is_evm_network():
-            self.token_address = self.token_address.lower()
+        if self.token is None:
+            self.token = detect_token_address(self.ticker, self.network)
+        if self.token is not None and self.network.is_evm_network():
+            self.token = self.token.lower()
         return self
 
     def process_addresses(self, address_groups: list[AddressGroup]) -> None:

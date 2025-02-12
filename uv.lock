@@ -1012,7 +1012,7 @@ dev = [
 requires-dist = [
     { name = "mm-aptos", specifier = "==0.2.0" },
     { name = "mm-btc", specifier = "==0.3.0" },
-    { name = "mm-eth", specifier = "==0.5.2" },
+    { name = "mm-eth", specifier = "==0.5.3" },
     { name = "mm-sol", specifier = "==0.5.1" },
     { name = "typer", specifier = ">=0.15.1" },
 ]
@@ -1046,30 +1046,29 @@ wheels = [
 
 [[package]]
 name = "mm-crypto-utils"
-version = "0.2.4"
+version = "0.2.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "loguru" },
     { name = "mm-std" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/1b/80/261c463cad1176b14d92b7390328f89184307f201d9d3117012abe5e8a72/mm_crypto_utils-0.2.4-py3-none-any.whl", hash = "sha256:487214228ce79ffb9a8afeef13d67b578393558d03a0268d4b7747174f9ac7ce", size = 8255 },
+    { url = "https://files.pythonhosted.org/packages/7d/37/2cd36351b70ec38130f00c9a564dc5f91556a102fbc7339ba9391f8d8c8f/mm_crypto_utils-0.2.5-py3-none-any.whl", hash = "sha256:c2697525dc6eb02f8dd7361b9a1d83f5693e4696b81bf68ff0a1d6e9e5e0e25e", size = 8268 },
 ]
 
 [[package]]
 name = "mm-eth"
-version = "0.5.2"
+version = "0.5.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "cryptography" },
     { name = "mm-crypto-utils" },
     { name = "typer" },
     { name = "web3" },
     { name = "websocket-client" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/77/88/aaf350e60256e7825cb45d1677847fd9351da9fdddc2d8f3f19469e37126/mm_eth-0.5.2.tar.gz", hash = "sha256:de3b9bb7d7e7e3bf14301ee42644d0d880e05ed1418f127950087f5aa2efa077", size = 96875 }
+sdist = { url = "https://files.pythonhosted.org/packages/02/75/b10134ca95e0d0d3c8db391362ebe88d9e35c5e75cf0652ad6e126711753/mm_eth-0.5.3.tar.gz", hash = "sha256:a66bdd24298e098e699833aaa5083a22ef48fbdda6717ff3458d399751ea8fe0", size = 96833 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/59/7c/cdb3a1672497872be8b523e05107d804b498ed26f4a1d5bb2c829c167523/mm_eth-0.5.2-py3-none-any.whl", hash = "sha256:f32aa97c170752e10adb8a4aefab9ab73d28bbc57ed1bf135bf9efa2735f008c", size = 37787 },
+    { url = "https://files.pythonhosted.org/packages/2d/45/b6a7cf1eeed1795d34d376c4f8f20b5dd66fe7f5cddf22c24f15b862f12c/mm_eth-0.5.3-py3-none-any.whl", hash = "sha256:01eb3a83daabf99783b36dc94f84f00226be00a692b8b4e9d4b3030e852d3031", size = 37772 },
 ]
 
 [[package]]
@@ -1092,7 +1091,7 @@ wheels = [
 
 [[package]]
 name = "mm-std"
-version = "0.3.0"
+version = "0.3.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cryptography" },
@@ -1104,7 +1103,7 @@ dependencies = [
     { name = "rich" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/41/b3/8e14a0eaf34b2db3f4c97eacafff63d63bb8c28f7baf718b3bc99f948dc2/mm_std-0.3.0-py3-none-any.whl", hash = "sha256:3aaab32cb88c29741d7a37cea4b2cb74548ec9b94ea4f8ebf0149f678ad921a3", size = 14693 },
+    { url = "https://files.pythonhosted.org/packages/1a/3a/4567a13ce7886cdbbaabca678d328e71814e41ccccc5d70eb354bdc7aca4/mm_std-0.3.1-py3-none-any.whl", hash = "sha256:e04319225050bd3df46d9190fea87cee621c101238aaf8cd9caa9aaf8c0b9df1", size = 14692 },
 ]
 
 [[package]]

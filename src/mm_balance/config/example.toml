@@ -47,8 +47,8 @@ addresses = "group: binance_eth"
 ticker = "USDC"
 network = "aptos"
 comment = "swap.thala.apt"
-token_address = "0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDC"
-token_decimals = 6
+token = "0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDC"
+decimals = 6
 addresses = "0x48271d39d0b05bd6efca2278f22277d6fcc375504f9839fd73f74ace240861af"
 
 

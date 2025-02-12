@@ -28,7 +28,7 @@ class Workers:
         self.progress_bar_task: dict[Network, TaskID] = {}
 
         for idx, group in enumerate(config.groups):
-            task_list = [Task(group_index=idx, wallet_address=a, token_address=group.token_address) for a in group.addresses]
+            task_list = [Task(group_index=idx, wallet_address=a, token_address=group.token) for a in group.addresses]
             self.tasks[group.network].extend(task_list)
 
         for network in config.networks():

@@ -63,6 +63,19 @@ def create_balances_result(config: Config, prices: Prices, workers: Workers) -> 
     return BalancesResult(groups=groups, total=total, total_share=total_share)
 
 
+# def save_balances_file(result: BalancesResult, balances_file: Path) -> None:
+#     data = {}
+#     for group in result.groups:
+#         if group.network not in data:
+#             data[group.network] = {}
+#         if group.ticker not in data[group.network]:
+#             data[group.network][group.ticker] = {}
+#         for address in group.addresses:
+#             if isinstance(address.balance, Balance):
+#                 data[group.network][group.ticker][address.address] = float(address.balance.balance)
+#     json.dump(data, balances_file.open("w"), indent=2)
+
+
 def _create_total(use_share: bool, groups: list[GroupResult]) -> Total:
     coin_balances: dict[str, Decimal] = defaultdict(Decimal)  # ticker -> balance
     coin_usd_values: dict[str, Decimal] = defaultdict(Decimal)  # ticker -> usd value

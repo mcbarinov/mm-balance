@@ -1000,7 +1000,7 @@ wheels = [
 
 [[package]]
 name = "mm-balance"
-version = "0.3.0"
+version = "0.3.1"
 source = { editable = "." }
 dependencies = [
     { name = "deepdiff" },
@@ -1026,8 +1026,8 @@ requires-dist = [
     { name = "deepdiff", specifier = "==8.2.0" },
     { name = "mm-aptos", specifier = "==0.2.0" },
     { name = "mm-btc", specifier = "==0.3.0" },
-    { name = "mm-eth", specifier = "==0.5.3" },
-    { name = "mm-sol", specifier = "==0.5.1" },
+    { name = "mm-eth", specifier = "==0.5.4" },
+    { name = "mm-sol", specifier = "==0.5.2" },
     { name = "typer", specifier = "==0.15.1" },
 ]
 
@@ -1060,19 +1060,19 @@ wheels = [
 
 [[package]]
 name = "mm-crypto-utils"
-version = "0.2.5"
+version = "0.2.6"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "loguru" },
     { name = "mm-std" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7d/37/2cd36351b70ec38130f00c9a564dc5f91556a102fbc7339ba9391f8d8c8f/mm_crypto_utils-0.2.5-py3-none-any.whl", hash = "sha256:c2697525dc6eb02f8dd7361b9a1d83f5693e4696b81bf68ff0a1d6e9e5e0e25e", size = 8268 },
+    { url = "https://files.pythonhosted.org/packages/d2/2a/72236eb60cb007d472fa6be72a98abf6b8273df3158a218cc5f412f86497/mm_crypto_utils-0.2.6-py3-none-any.whl", hash = "sha256:ef738203e2863570308d0fc5fee8f05c469d3f7df905dcdfd092d84690b14c9c", size = 8269 },
 ]
 
 [[package]]
 name = "mm-eth"
-version = "0.5.3"
+version = "0.5.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "mm-crypto-utils" },
@@ -1080,32 +1080,32 @@ dependencies = [
     { name = "web3" },
     { name = "websocket-client" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/02/75/b10134ca95e0d0d3c8db391362ebe88d9e35c5e75cf0652ad6e126711753/mm_eth-0.5.3.tar.gz", hash = "sha256:a66bdd24298e098e699833aaa5083a22ef48fbdda6717ff3458d399751ea8fe0", size = 96833 }
+sdist = { url = "https://files.pythonhosted.org/packages/26/bd/1b4478dc9fc693eac1965495c0861e6cbab4ba553150a9ab78602a3845f3/mm_eth-0.5.4.tar.gz", hash = "sha256:fd83d579e0d7a0883a021ce9057ca332537f05f8a6241344192cf5618007f7b4", size = 96836 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/2d/45/b6a7cf1eeed1795d34d376c4f8f20b5dd66fe7f5cddf22c24f15b862f12c/mm_eth-0.5.3-py3-none-any.whl", hash = "sha256:01eb3a83daabf99783b36dc94f84f00226be00a692b8b4e9d4b3030e852d3031", size = 37772 },
+    { url = "https://files.pythonhosted.org/packages/61/31/4fcfe3c394928ee86c05dc488dc067a9a3091ce04338b1239cd34253b529/mm_eth-0.5.4-py3-none-any.whl", hash = "sha256:5441f87bca3673698888e0d5a95ba7944555463faf516e98063337f98ba0466b", size = 37773 },
 ]
 
 [[package]]
 name = "mm-sol"
-version = "0.5.1"
+version = "0.5.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "base58" },
-    { name = "cryptography" },
     { name = "jinja2" },
     { name = "mm-crypto-utils" },
     { name = "mnemonic" },
     { name = "solana" },
+    { name = "solders" },
     { name = "typer" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/bb/24/535e8d2dec1e66ce97d47f1356dbb2f6675967cece55a192cd128935b56d/mm_sol-0.5.1.tar.gz", hash = "sha256:7fbc033a905ff128d9f0f8b0b089d56acbd894a95f21a868e687257e451dcb43", size = 57210 }
+sdist = { url = "https://files.pythonhosted.org/packages/02/c9/6665f682d2388d379fd66ead7fa7fed77f0657760c323492812eb8a215d2/mm_sol-0.5.2.tar.gz", hash = "sha256:57f9307376811d904e613a8b1b598af80539b8e1d67228c3f5474bb539705e87", size = 57101 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b2/7b/05a174f73f0741bb026fbd1bf49ef716382dd48c40da707b1b7b7e2ba122/mm_sol-0.5.1-py3-none-any.whl", hash = "sha256:60eb18a7330084e11cd41dd3ccc294c01c0aafaad576be8ae9ee7e4afad49628", size = 24167 },
+    { url = "https://files.pythonhosted.org/packages/34/cb/98ebc459e3ec321595b14e7a46d6c8cdecb9190090f94f1097f905f5c56f/mm_sol-0.5.2-py3-none-any.whl", hash = "sha256:68064f8222a9f8d2744b03bf7faab457ed0eb9fc4818447fa85cc87a2319431f", size = 24145 },
 ]
 
 [[package]]
 name = "mm-std"
-version = "0.3.1"
+version = "0.3.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cryptography" },
@@ -1117,7 +1117,7 @@ dependencies = [
     { name = "rich" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/1a/3a/4567a13ce7886cdbbaabca678d328e71814e41ccccc5d70eb354bdc7aca4/mm_std-0.3.1-py3-none-any.whl", hash = "sha256:e04319225050bd3df46d9190fea87cee621c101238aaf8cd9caa9aaf8c0b9df1", size = 14692 },
+    { url = "https://files.pythonhosted.org/packages/c0/9a/19f88e047426a52de2f8262d654ca8f20b6b9f15085db7dca6850b7d89d9/mm_std-0.3.2-py3-none-any.whl", hash = "sha256:bf479b1810c887b41aa8b4ad3b6d59d2002703a26b04499516af8e2d94351c86", size = 14709 },
 ]
 
 [[package]]

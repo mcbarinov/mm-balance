@@ -49,10 +49,8 @@ def cli(
     debug: Annotated[bool | None, typer.Option("--debug", "-d", help="Print debug info.")] = None,
     print_config: Annotated[bool | None, typer.Option("--config", "-c", help="Print config and exit.")] = None,
     price: Annotated[bool | None, typer.Option("--price/--no-price", help="Print prices.")] = None,
-    save_balances_file: Annotated[Path | None, typer.Option("--save-balances-file", help="Save balances file.")] = None,
-    diff_from_balances_file: Annotated[
-        Path | None, typer.Option("--diff-from-balances-file", help="Diff from balances file.")
-    ] = None,
+    save_balances: Annotated[Path | None, typer.Option("--save-balances", help="Save balances file.")] = None,
+    diff_from_balances: Annotated[Path | None, typer.Option("--diff-from-balances", help="Diff from balances file.")] = None,
     _example: Annotated[bool | None, typer.Option("--example", callback=example_callback, help="Print a config example.")] = None,
     _networks: Annotated[
         bool | None, typer.Option("--networks", callback=networks_callback, help="Print supported networks.")
@@ -98,11 +96,11 @@ def cli(
     else:
         fatal("Unsupported print format")
 
-    if save_balances_file:
-        BalancesDict.from_balances_result(result).save_to_path(save_balances_file)
+    if save_balances:
+        BalancesDict.from_balances_result(result).save_to_path(save_balances)
 
-    if diff_from_balances_file:
-        old_balances = BalancesDict.from_file(diff_from_balances_file)
+    if diff_from_balances:
+        old_balances = BalancesDict.from_file(diff_from_balances)
         new_balances = BalancesDict.from_balances_result(result)
         diff = Diff.calc(old_balances, new_balances)
         diff.print(config.settings.print_format)

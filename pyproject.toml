@@ -1,12 +1,12 @@
 [project]
 name = "mm-balance"
-version = "0.3.0"
+version = "0.3.1"
 description = ""
 requires-python = ">=3.12"
 dependencies = [
     "mm-btc==0.3.0",
-    "mm-eth==0.5.3",
-    "mm-sol==0.5.1",
+    "mm-eth==0.5.4",
+    "mm-sol==0.5.2",
     "mm-aptos==0.2.0",
     "typer==0.15.1",
     "deepdiff==8.2.0",

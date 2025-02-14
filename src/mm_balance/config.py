@@ -60,6 +60,8 @@ class Group(BaseConfig):
             else:
                 result.append(line)
         # TODO: check address is valid. There is network info in the group
+        if self.network.need_lowercase_address():
+            result = [address.lower() for address in result]
         self.addresses = pydash.uniq(result)
 
 

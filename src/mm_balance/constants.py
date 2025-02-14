@@ -12,13 +12,19 @@ class Network(str):
     __slots__ = ()
 
     def is_evm_network(self) -> bool:
-        return self in [NETWORK_ETHEREUM, NETWORK_ARBITRUM_ONE, NETWORK_OP_MAINNET] or self.startswith("evm-")
+        return self in EVM_NETWORKS or self.startswith("evm-")
+
+    def need_lowercase_address(self) -> bool:
+        return self.is_evm_network()
 
     @classmethod
     def __get_pydantic_core_schema__(cls, _source_type: object, handler: GetCoreSchemaHandler) -> CoreSchema:
         return core_schema.no_info_after_validator_function(cls, handler(str))
 
 
+# evm networks
+
+# other networks
 NETWORK_APTOS = Network("aptos")
 NETWORK_ARBITRUM_ONE = Network("arbitrum-one")
 NETWORK_BITCOIN = Network("bitcoin")
@@ -26,6 +32,7 @@ NETWORK_ETHEREUM = Network("ethereum")
 NETWORK_SOLANA = Network("solana")
 NETWORK_OP_MAINNET = Network("op-mainnet")
 NETWORKS = [NETWORK_APTOS, NETWORK_ARBITRUM_ONE, NETWORK_BITCOIN, NETWORK_ETHEREUM, NETWORK_SOLANA, NETWORK_OP_MAINNET]
+EVM_NETWORKS = [NETWORK_ETHEREUM, NETWORK_ARBITRUM_ONE, NETWORK_OP_MAINNET]
 
 
 TOKEN_ADDRESS: dict[Network, dict[str, str]] = {

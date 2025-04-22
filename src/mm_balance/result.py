@@ -2,8 +2,6 @@ from collections import defaultdict
 from dataclasses import dataclass
 from decimal import Decimal
 
-from mm_std import Ok
-
 from mm_balance.config import Config, Group
 from mm_balance.constants import USD_STABLECOINS, Network
 from mm_balance.price import Prices
@@ -63,19 +61,6 @@ def create_balances_result(config: Config, prices: Prices, workers: Workers) -> 
     return BalancesResult(groups=groups, total=total, total_share=total_share)
 
 
-# def save_balances_file(result: BalancesResult, balances_file: Path) -> None:
-#     data = {}
-#     for group in result.groups:
-#         if group.network not in data:
-#             data[group.network] = {}
-#         if group.ticker not in data[group.network]:
-#             data[group.network][group.ticker] = {}
-#         for address in group.addresses:
-#             if isinstance(address.balance, Balance):
-#                 data[group.network][group.ticker][address.address] = float(address.balance.balance)
-#     json.dump(data, balances_file.open("w"), indent=2)
-
-
 def _create_total(use_share: bool, groups: list[GroupResult]) -> Total:
     coin_balances: dict[str, Decimal] = defaultdict(Decimal)  # ticker -> balance
     coin_usd_values: dict[str, Decimal] = defaultdict(Decimal)  # ticker -> usd value
@@ -116,8 +101,8 @@ def _create_group_result(config: Config, group: Group, tasks: list[Task], prices
         balance: Balance | str
         if task.balance is None:
             balance = "balance is None! Something went wrong."
-        elif isinstance(task.balance, Ok):
-            coin_value = task.balance.ok
+        elif task.balance.is_ok():
+            coin_value = task.balance.unwrap()
             usd_value = Decimal(0)
             if group.ticker in prices:
                 usd_value = round_decimal(coin_value * prices[group.ticker], config.settings.round_ndigits)
@@ -125,7 +110,7 @@ def _create_group_result(config: Config, group: Group, tasks: list[Task], prices
             balance_sum += balance.balance
             usd_sum += balance.usd_value
         else:
-            balance = task.balance.err
+            balance = task.balance.unwrap_error()
         addresses.append(AddressBalance(address=task.wallet_address, balance=balance))
 
     balance_sum_share = balance_sum * group.share
@@ -142,3 +127,16 @@ def _create_group_result(config: Config, group: Group, tasks: list[Task], prices
         balance_sum_share=balance_sum_share,
         usd_sum_share=usd_sum_share,
     )
+
+
+# def save_balances_file(result: BalancesResult, balances_file: Path) -> None:
+#     data = {}
+#     for group in result.groups:
+#         if group.network not in data:
+#             data[group.network] = {}
+#         if group.ticker not in data[group.network]:
+#             data[group.network][group.ticker] = {}
+#         for address in group.addresses:
+#             if isinstance(address.balance, Balance):
+#                 data[group.network][group.ticker][address.address] = float(address.balance.balance)
+#     json.dump(data, balances_file.open("w"), indent=2)

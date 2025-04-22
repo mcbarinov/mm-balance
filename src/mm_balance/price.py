@@ -2,8 +2,7 @@ from collections import defaultdict
 from decimal import Decimal
 
 import pydash
-from mm_std import hr
-from mm_std.random_ import random_str_choice
+from mm_std import http_request, random_str_choice
 
 from mm_balance.config import Config, Group
 from mm_balance.constants import RETRIES_COINGECKO_PRICES, TICKER_TO_COINGECKO_ID
@@ -18,7 +17,7 @@ class Prices(defaultdict[str, Decimal]):
     """
 
 
-def get_prices(config: Config) -> Prices:
+async def get_prices(config: Config) -> Prices:
     result = Prices()
 
     coingecko_map: dict[str, str] = {}  # ticker -> coingecko_id
@@ -30,13 +29,15 @@ def get_prices(config: Config) -> Prices:
 
     url = f"https://api.coingecko.com/api/v3/simple/price?ids={','.join(coingecko_map.values())}&vs_currencies=usd"
     for _ in range(RETRIES_COINGECKO_PRICES):
-        res = hr(url, proxy=random_str_choice(config.settings.proxies))
-        if res.code != 200:
+        res = await http_request(url, proxy=random_str_choice(config.settings.proxies))
+        if res.status_code != 200:
             continue
 
+        json_body = res.parse_json_body() or {}
+
         for ticker, coingecko_id in coingecko_map.items():
-            if coingecko_id in res.json:
-                result[ticker] = Decimal(str(pydash.get(res.json, f"{coingecko_id}.usd")))
+            if coingecko_id in json_body:
+                result[ticker] = Decimal(str(pydash.get(json_body, f"{coingecko_id}.usd")))
         break
 
     return result

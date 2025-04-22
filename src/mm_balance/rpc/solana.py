@@ -1,27 +1,22 @@
 from decimal import Decimal
 
-from mm_sol import balance, token
-from mm_std import Ok, Result
+from mm_crypto_utils import Nodes, Proxies
+from mm_sol import retry
+from mm_std import Result
 
 from mm_balance.constants import RETRIES_BALANCE, RETRIES_DECIMALS, TIMEOUT_BALANCE, TIMEOUT_DECIMALS
 from mm_balance.utils import scale_and_round
 
 
-def get_balance(
-    nodes: list[str], wallet: str, token: str | None, decimals: int, proxies: list[str], round_ndigits: int
+async def get_balance(
+    nodes: Nodes, wallet: str, token: str | None, decimals: int, proxies: Proxies, round_ndigits: int
 ) -> Result[Decimal]:
     if token is None:
-        res = balance.get_sol_balance_with_retries(
-            nodes, wallet, retries=RETRIES_BALANCE, timeout=TIMEOUT_BALANCE, proxies=proxies
-        )
+        res = await retry.get_sol_balance(RETRIES_BALANCE, nodes, proxies, address=wallet, timeout=TIMEOUT_BALANCE)
     else:
-        res = balance.get_token_balance_with_retries(
-            nodes, wallet, token, retries=RETRIES_BALANCE, timeout=TIMEOUT_BALANCE, proxies=proxies
-        )
-    return res.and_then(lambda b: Ok(scale_and_round(b, decimals, round_ndigits)))
+        res = await retry.get_token_balance(RETRIES_BALANCE, nodes, proxies, owner=wallet, token=token, timeout=TIMEOUT_BALANCE)
+    return res.map(lambda value: scale_and_round(value, decimals, round_ndigits))
 
 
-def get_token_decimals(nodes: list[str], token_address: str, proxies: list[str]) -> Result[int]:
-    return token.get_decimals_with_retries(
-        nodes, token_address, retries=RETRIES_DECIMALS, timeout=TIMEOUT_DECIMALS, proxies=proxies
-    )
+async def get_token_decimals(nodes: Nodes, token: str, proxies: Proxies) -> Result[int]:
+    return await retry.get_token_decimals(RETRIES_DECIMALS, nodes, proxies, token=token, timeout=TIMEOUT_DECIMALS)

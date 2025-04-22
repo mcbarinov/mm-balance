@@ -1,4 +1,4 @@
-from mm_std import Err, fatal
+from mm_std import fatal
 
 from mm_balance.config import Config
 from mm_balance.constants import NETWORK_APTOS, NETWORK_BITCOIN, NETWORK_SOLANA, Network
@@ -12,7 +12,7 @@ class TokenDecimals(dict[Network, dict[str | None, int]]):  # {network: {None: 1
             self[network] = {}
 
 
-def get_token_decimals(config: Config) -> TokenDecimals:
+async def get_token_decimals(config: Config) -> TokenDecimals:
     result = TokenDecimals(config.networks())
     proxies = config.settings.proxies
 
@@ -41,13 +41,13 @@ def get_token_decimals(config: Config) -> TokenDecimals:
 
         nodes = config.nodes[group.network]
         if group.network.is_evm_network():
-            res = evm.get_token_decimals(nodes, group.token, proxies)
+            res = await evm.get_token_decimals(nodes, group.token, proxies)
         elif group.network == NETWORK_SOLANA:
-            res = solana.get_token_decimals(nodes, group.token, proxies)
+            res = await solana.get_token_decimals(nodes, group.token, proxies)
         else:
             fatal(f"unsupported network: {group.network}. Cant get token decimals for {group.token}")
-        if isinstance(res, Err):
+        if res.is_err():
             fatal(f"can't get decimals for token {group.ticker} / {group.token}, error={res.err}")
-        result[group.network][group.token] = res.ok
+        result[group.network][group.token] = res.unwrap()
 
     return result

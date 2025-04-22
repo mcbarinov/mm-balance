@@ -1,28 +1,23 @@
 from decimal import Decimal
 
-from mm_eth import erc20, rpc
-from mm_std import Ok, Result
+from mm_crypto_utils import Nodes, Proxies
+from mm_eth import retry
+from mm_std import Result
 
 from mm_balance.constants import RETRIES_BALANCE, RETRIES_DECIMALS, TIMEOUT_BALANCE, TIMEOUT_DECIMALS
 from mm_balance.utils import scale_and_round
 
 
-def get_balance(
-    nodes: list[str], wallet: str, token: str | None, decimals: int, proxies: list[str], round_ndigits: int
+async def get_balance(
+    nodes: Nodes, wallet: str, token: str | None, decimals: int, proxies: Proxies, round_ndigits: int
 ) -> Result[Decimal]:
     if token is not None:
-        res = erc20.get_balance(
-            nodes,
-            token,
-            wallet,
-            proxies=proxies,
-            attempts=RETRIES_BALANCE,
-            timeout=TIMEOUT_BALANCE,
-        )
+        res = await retry.erc20_balance(RETRIES_BALANCE, nodes, proxies, token=token, wallet=wallet, timeout=TIMEOUT_BALANCE)
+
     else:
-        res = rpc.eth_get_balance(nodes, wallet, proxies=proxies, attempts=RETRIES_BALANCE, timeout=TIMEOUT_BALANCE)
-    return res.and_then(lambda b: Ok(scale_and_round(b, decimals, round_ndigits)))
+        res = await retry.eth_get_balance(RETRIES_BALANCE, nodes, proxies, address=wallet, timeout=TIMEOUT_BALANCE)
+    return res.map(lambda value: scale_and_round(value, decimals, round_ndigits))
 
 
-def get_token_decimals(nodes: list[str], token_address: str, proxies: list[str]) -> Result[int]:
-    return erc20.get_decimals(nodes, token_address, timeout=TIMEOUT_DECIMALS, proxies=proxies, attempts=RETRIES_DECIMALS)
+async def get_token_decimals(nodes: Nodes, token: str, proxies: Proxies) -> Result[int]:
+    return await retry.erc20_decimals(RETRIES_DECIMALS, nodes, proxies, token=token, timeout=TIMEOUT_DECIMALS)

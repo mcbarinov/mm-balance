@@ -2,12 +2,12 @@ from decimal import Decimal
 
 from mm_std import print_table
 
+from mm_balance.balance_fetcher import BalanceFetcher
 from mm_balance.config import Config
 from mm_balance.output.utils import format_number
 from mm_balance.price import Prices
 from mm_balance.result import BalancesResult, GroupResult, Total
 from mm_balance.token_decimals import TokenDecimals
-from mm_balance.workers import Workers
 
 
 def print_nodes(config: Config) -> None:
@@ -38,7 +38,7 @@ def print_prices(config: Config, prices: Prices) -> None:
         print_table("Prices", ["coin", "usd"], rows)
 
 
-def print_result(config: Config, result: BalancesResult, workers: Workers) -> None:
+def print_result(config: Config, result: BalancesResult, workers: BalanceFetcher) -> None:
     for group in result.groups:
         _print_group(config, group)
 
@@ -49,14 +49,14 @@ def print_result(config: Config, result: BalancesResult, workers: Workers) -> No
     _print_errors(config, workers)
 
 
-def _print_errors(config: Config, workers: Workers) -> None:
+def _print_errors(config: Config, workers: BalanceFetcher) -> None:
     error_tasks = workers.get_errors()
     if not error_tasks:
         return
     rows = []
     for task in error_tasks:
         group = config.groups[task.group_index]
-        rows.append([group.ticker + " / " + group.network, task.wallet_address, task.balance.err])  # type: ignore[union-attr]
+        rows.append([group.ticker + " / " + group.network, task.wallet_address, task.balance.error])  # type: ignore[union-attr]
     print_table("Errors", ["coin", "address", "error"], rows)
 
 

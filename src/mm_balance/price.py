@@ -4,7 +4,7 @@ from decimal import Decimal
 import pydash
 from mm_std import http_request, random_str_choice
 
-from mm_balance.config import Config, Group
+from mm_balance.config import AssetGroup, Config
 from mm_balance.constants import RETRIES_COINGECKO_PRICES, TICKER_TO_COINGECKO_ID
 
 
@@ -43,7 +43,7 @@ async def get_prices(config: Config) -> Prices:
     return result
 
 
-def get_coingecko_id(group: Group) -> str | None:
+def get_coingecko_id(group: AssetGroup) -> str | None:
     if group.coingecko_id:
         return group.coingecko_id
     return TICKER_TO_COINGECKO_ID.get(group.ticker)

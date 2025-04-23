@@ -4,16 +4,16 @@ from pathlib import Path
 from mm_std import PrintFormat, fatal
 from pydantic import BaseModel
 
+from mm_balance.balance_fetcher import BalanceFetcher
 from mm_balance.config import Config
 from mm_balance.diff import BalancesDict, Diff
 from mm_balance.output.formats import json_format, table_format
 from mm_balance.price import Prices, get_prices
 from mm_balance.result import create_balances_result
 from mm_balance.token_decimals import get_token_decimals
-from mm_balance.workers import Workers
 
 
-class BalanceCmdParams(BaseModel):
+class CommandParameters(BaseModel):
     config_path: Path
     print_format: PrintFormat | None
     skip_empty: bool | None
@@ -24,7 +24,7 @@ class BalanceCmdParams(BaseModel):
     diff_from_balances: Path | None
 
 
-async def run(params: BalanceCmdParams) -> None:
+async def run(params: CommandParameters) -> None:
     zip_password = ""  # nosec
     if params.config_path.name.endswith(".zip"):
         zip_password = getpass.getpass("zip password")
@@ -53,7 +53,7 @@ async def run(params: BalanceCmdParams) -> None:
     if config.settings.print_format is PrintFormat.TABLE:
         table_format.print_prices(config, prices)
 
-    workers = Workers(config, token_decimals)
+    workers = BalanceFetcher(config, token_decimals)
     await workers.process()
 
     result = create_balances_result(config, prices, workers)

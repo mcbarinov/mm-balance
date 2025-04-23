@@ -7,7 +7,7 @@ dependencies = [
     "mm-btc==0.4.2",
     "mm-eth==0.6.1",
     "mm-sol==0.6.2",
-    "mm-apt==0.3.3",
+    "mm-apt==0.3.4",
     "typer==0.15.2",
     "deepdiff==8.4.2",
 ]

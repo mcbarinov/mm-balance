@@ -1,8 +1,8 @@
 from mm_std import fatal
 
+from mm_balance import rpc
 from mm_balance.config import Config
 from mm_balance.constants import NETWORK_APTOS, NETWORK_BITCOIN, NETWORK_SOLANA, Network
-from mm_balance.rpc import evm, solana
 
 
 class TokenDecimals(dict[Network, dict[str | None, int]]):  # {network: {None: 18}} -- None is for native token, ex. ETH
@@ -14,7 +14,6 @@ class TokenDecimals(dict[Network, dict[str | None, int]]):  # {network: {None: 1
 
 async def get_token_decimals(config: Config) -> TokenDecimals:
     result = TokenDecimals(config.networks())
-    proxies = config.settings.proxies
 
     for group in config.groups:
         # token_decimals is already known
@@ -39,15 +38,12 @@ async def get_token_decimals(config: Config) -> TokenDecimals:
         if group.token in result[group.network]:
             continue  # don't request for a token_decimals twice
 
-        nodes = config.nodes[group.network]
-        if group.network.is_evm_network():
-            res = await evm.get_token_decimals(nodes, group.token, proxies)
-        elif group.network == NETWORK_SOLANA:
-            res = await solana.get_token_decimals(nodes, group.token, proxies)
-        else:
-            fatal(f"unsupported network: {group.network}. Cant get token decimals for {group.token}")
+        res = await rpc.get_token_decimals(
+            network=group.network, nodes=config.nodes[group.network], proxies=config.settings.proxies, token_address=group.token
+        )
+
         if res.is_err():
-            fatal(f"can't get decimals for token {group.ticker} / {group.token}, error={res.err}")
+            fatal(f"can't get decimals for token {group.ticker} / {group.token}, error={res.unwrap_error()}")
         result[group.network][group.token] = res.unwrap()
 
     return result

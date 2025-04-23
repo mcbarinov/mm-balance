@@ -16,11 +16,18 @@ class Validators(ConfigValidators):
     pass
 
 
-class Group(BaseConfig):
+class AssetGroup(BaseConfig):
+    """
+    Represents a group of cryptocurrency assets of the same type.
+
+    An asset group contains information about a specific cryptocurrency (token)
+    across multiple addresses/wallets.
+    """
+
     comment: str = ""
     ticker: Annotated[str, StringConstraints(to_upper=True)]
     network: Network
-    token: str | None = None  # Token address. If None, it's a native token, for example ETH
+    token: str | None = None  # Token address. If None, it's a native token
     decimals: int | None = None
     coingecko_id: str | None = None
     addresses: Annotated[list[str], BeforeValidator(Validators.addresses(unique=True))]
@@ -42,7 +49,7 @@ class Group(BaseConfig):
             self.token = self.token.lower()
         return self
 
-    def process_addresses(self, address_groups: list[AddressGroup]) -> None:
+    def process_addresses(self, address_groups: list[AddressCollection]) -> None:
         result = []
         for line in self.addresses:
             if line.startswith("file:"):
@@ -65,7 +72,7 @@ class Group(BaseConfig):
         self.addresses = pydash.uniq(result)
 
 
-class AddressGroup(BaseConfig):
+class AddressCollection(BaseConfig):
     name: str
     addresses: Annotated[list[str], BeforeValidator(ConfigValidators.addresses(unique=True))]
 
@@ -81,8 +88,8 @@ class Settings(BaseConfig):
 
 
 class Config(BaseConfig):
-    groups: list[Group] = Field(alias="coins")
-    addresses: list[AddressGroup] = Field(default_factory=list)
+    groups: list[AssetGroup] = Field(alias="coins")
+    addresses: list[AddressCollection] = Field(default_factory=list)
     nodes: dict[Network, list[str]] = Field(default_factory=dict)
     workers: dict[Network, int] = Field(default_factory=dict)
     settings: Settings = Field(default_factory=Settings)  # type: ignore[arg-type]

@@ -2,11 +2,11 @@ from collections import defaultdict
 from dataclasses import dataclass
 from decimal import Decimal
 
-from mm_balance.config import Config, Group
+from mm_balance.balance_fetcher import BalanceFetcher, Task
+from mm_balance.config import AssetGroup, Config
 from mm_balance.constants import USD_STABLECOINS, Network
 from mm_balance.price import Prices
 from mm_balance.utils import round_decimal
-from mm_balance.workers import Task, Workers
 
 
 @dataclass
@@ -50,7 +50,7 @@ class BalancesResult:
     total_share: Total
 
 
-def create_balances_result(config: Config, prices: Prices, workers: Workers) -> BalancesResult:
+def create_balances_result(config: Config, prices: Prices, workers: BalanceFetcher) -> BalancesResult:
     groups = []
     for group_index, group in enumerate(config.groups):
         tasks = workers.get_group_tasks(group_index, group.network)
@@ -93,7 +93,7 @@ def _create_total(use_share: bool, groups: list[GroupResult]) -> Total:
     )
 
 
-def _create_group_result(config: Config, group: Group, tasks: list[Task], prices: Prices) -> GroupResult:
+def _create_group_result(config: Config, group: AssetGroup, tasks: list[Task], prices: Prices) -> GroupResult:
     addresses = []
     balance_sum = Decimal(0)
     usd_sum = Decimal(0)

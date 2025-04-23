@@ -22,9 +22,6 @@ class Network(str):
         return core_schema.no_info_after_validator_function(cls, handler(str))
 
 
-# evm networks
-
-# other networks
 NETWORK_APTOS = Network("aptos")
 NETWORK_ARBITRUM_ONE = Network("arbitrum-one")
 NETWORK_BITCOIN = Network("bitcoin")

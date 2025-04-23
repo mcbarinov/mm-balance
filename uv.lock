@@ -965,14 +965,14 @@ wheels = [
 
 [[package]]
 name = "mm-apt"
-version = "0.3.3"
+version = "0.3.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "mm-crypto-utils" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/0e/66/cf2771261d6e9c1a998c257eb0039061efff8e2238199e6d200482efc184/mm_apt-0.3.3.tar.gz", hash = "sha256:be9ee93c6ff36388c2bed82c5f4a5ff67a787d48aadc9850a1878bbafd7b8ca7", size = 57404, upload_time = "2025-04-22T06:29:14.05Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/30/84/2f5e8a5173b0021ef7c47ad0e8da918d8f33d80d445c03c30f368f19d21d/mm_apt-0.3.4.tar.gz", hash = "sha256:46769d066fca9d05c5d041213e197dcffd4cafdafcc1f00c6cc8a46a51fb7c63", size = 57565, upload_time = "2025-04-23T07:04:56.843Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e2/c1/86f44c3d0a48b2a5151e4a552f4572c39db53b22651c0df6e087acd50ae6/mm_apt-0.3.3-py3-none-any.whl", hash = "sha256:db5e97817d701b359490c62a35ddd191d81aea841f845924f6518456a7346875", size = 2188, upload_time = "2025-04-22T06:29:12.729Z" },
+    { url = "https://files.pythonhosted.org/packages/24/57/08b9ca993256ec38897842b7cea8c91120bd7486654c333527a58e8ddb88/mm_apt-0.3.4-py3-none-any.whl", hash = "sha256:4edff463354408989b6f81eacae0f9933bc02eb73678051e85b957369ef57550", size = 2561, upload_time = "2025-04-23T07:04:55.237Z" },
 ]
 
 [[package]]
@@ -1001,7 +1001,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "deepdiff", specifier = "==8.4.2" },
-    { name = "mm-apt", specifier = "==0.3.3" },
+    { name = "mm-apt", specifier = "==0.3.4" },
     { name = "mm-btc", specifier = "==0.4.2" },
     { name = "mm-eth", specifier = "==0.6.1" },
     { name = "mm-sol", specifier = "==0.6.2" },

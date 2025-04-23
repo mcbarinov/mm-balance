@@ -4,10 +4,10 @@ from decimal import Decimal
 from mm_std import AsyncTaskRunner, PrintFormat, Result
 from rich.progress import TaskID
 
+from mm_balance import rpc
 from mm_balance.config import Config
-from mm_balance.constants import NETWORK_APTOS, NETWORK_BITCOIN, NETWORK_SOLANA, Network
+from mm_balance.constants import Network
 from mm_balance.output import utils
-from mm_balance.rpc import aptos, btc, evm, solana
 from mm_balance.token_decimals import TokenDecimals
 
 
@@ -19,7 +19,7 @@ class Task:
     balance: Result[Decimal] | None = None
 
 
-class Workers:
+class BalanceFetcher:
     def __init__(self, config: Config, token_decimals: TokenDecimals) -> None:
         self.config = config
         self.token_decimals = token_decimals
@@ -42,13 +42,7 @@ class Workers:
                 runner.add_task(f"process_{network}", self._process_network(network))
             await runner.run()
 
-            # job = ConcurrentTasks(max_workers=10)
-            # for network in self.config.networks():
-            #     job.add_task(network, self._process_network, args=(network,))
-            # job.execute()
-
     def get_group_tasks(self, group_index: int, network: Network) -> list[Task]:
-        # TODO: can we get network by group_index?
         return [b for b in self.tasks[network] if b.group_index == group_index]
 
     def get_errors(self) -> list[Task]:
@@ -58,11 +52,6 @@ class Workers:
         return result
 
     async def _process_network(self, network: Network) -> None:
-        # job = ConcurrentTasks(max_workers=self.config.workers[network])
-        # for idx, task in enumerate(self.tasks[network]):
-        #     job.add_task(str(idx), self._get_balance, args=(network, task.wallet_address, task.token_address))
-        # job.execute()
-
         runner = AsyncTaskRunner(max_concurrent_tasks=self.config.workers[network])
         for idx, task in enumerate(self.tasks[network]):
             runner.add_task(str(idx), self._get_balance(network, task.wallet_address, task.token_address))
@@ -73,21 +62,14 @@ class Workers:
             self.tasks[network][idx].balance = res.results.get(str(idx))
 
     async def _get_balance(self, network: Network, wallet_address: str, token_address: str | None) -> Result[Decimal]:
-        nodes = self.config.nodes[network]
-        round_ndigits = self.config.settings.round_ndigits
-        proxies = self.config.settings.proxies
-        token_decimals = self.token_decimals[network][token_address]
-
-        if network.is_evm_network():
-            res = await evm.get_balance(nodes, wallet_address, token_address, token_decimals, proxies, round_ndigits)
-        elif network == NETWORK_BITCOIN:
-            res = await btc.get_balance(wallet_address, proxies, round_ndigits)
-        elif network == NETWORK_APTOS:
-            res = await aptos.get_balance(nodes, wallet_address, token_address, token_decimals, proxies, round_ndigits)
-        elif network == NETWORK_SOLANA:
-            res = await solana.get_balance(nodes, wallet_address, token_address, token_decimals, proxies, round_ndigits)
-        else:
-            raise ValueError(f"Unsupported network: {network}")
-
+        res = await rpc.get_balance(
+            network=network,
+            nodes=self.config.nodes[network],
+            proxies=self.config.settings.proxies,
+            wallet_address=wallet_address,
+            token_address=token_address,
+            token_decimals=self.token_decimals[network][token_address],
+            ndigits=self.config.settings.round_ndigits,
+        )
         self.progress_bar.update(self.progress_bar_task[network], advance=1)
         return res

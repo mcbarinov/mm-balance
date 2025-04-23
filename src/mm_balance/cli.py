@@ -7,8 +7,8 @@ from typing import Annotated
 import typer
 from mm_std import PrintFormat, fatal, pretty_print_toml
 
-from mm_balance import balance_cmd
-from mm_balance.balance_cmd import BalanceCmdParams
+from mm_balance import command_runner
+from mm_balance.command_runner import CommandParameters
 from mm_balance.constants import NETWORKS
 
 app = typer.Typer(no_args_is_help=True, pretty_exceptions_enable=False, add_completion=False)
@@ -53,8 +53,8 @@ def cli(
     _version: bool = typer.Option(None, "--version", callback=version_callback, is_eager=True),
 ) -> None:
     asyncio.run(
-        balance_cmd.run(
-            BalanceCmdParams(
+        command_runner.run(
+            CommandParameters(
                 config_path=config_path,
                 print_format=print_format,
                 skip_empty=skip_empty,

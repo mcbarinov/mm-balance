@@ -27,7 +27,7 @@ class CommandParameters(BaseModel):
 async def run(params: CommandParameters) -> None:
     zip_password = ""  # nosec
     if params.config_path.name.endswith(".zip"):
-        zip_password = getpass.getpass("zip password")
+        zip_password = getpass.getpass("zip password: ")
     config = Config.read_toml_config_or_exit(params.config_path, zip_password=zip_password)
     if params.print_config:
         config.print_and_exit()

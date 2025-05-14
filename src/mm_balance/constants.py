@@ -64,9 +64,9 @@ TICKER_TO_COINGECKO_ID = {
 USD_STABLECOINS = ["USDT", "USDC"]
 
 DEFAULT_NODES: dict[Network, list[str]] = {
-    NETWORK_ARBITRUM_ONE: ["https://arb1.arbitrum.io/rpc", "https://arbitrum.llamarpc.com"],
+    NETWORK_ARBITRUM_ONE: ["https://arb1.arbitrum.io/rpc", "https://arbitrum.drpc.org"],
     NETWORK_BITCOIN: [],
-    NETWORK_ETHEREUM: ["https://ethereum.publicnode.com", "https://rpc.ankr.com/eth"],
+    NETWORK_ETHEREUM: ["https://ethereum.publicnode.com", "https://eth.merkle.io", "https://rpc.flashbots.net"],
     NETWORK_SOLANA: ["https://api.mainnet-beta.solana.com"],
     NETWORK_OP_MAINNET: ["https://mainnet.optimism.io", "https://optimism.llamarpc.com"],
     NETWORK_APTOS: ["https://fullnode.mainnet.aptoslabs.com/v1"],

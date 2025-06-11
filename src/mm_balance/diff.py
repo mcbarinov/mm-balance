@@ -5,11 +5,12 @@ import re
 from decimal import Decimal
 from pathlib import Path
 
+import mm_print
 from deepdiff.diff import DeepDiff
-from mm_std import PrintFormat, print_json, print_plain, print_table
 from pydantic import BaseModel, RootModel
 
 from mm_balance.result import Balance, BalancesResult
+from mm_balance.utils import PrintFormat
 
 
 class BalancesDict(RootModel[dict[str, dict[str, dict[str, Decimal]]]]):  # network->ticker->address->balance
@@ -71,23 +72,23 @@ class Diff(BaseModel):
             and not self.address_removed
             and not self.balance_changed
         ):
-            print_plain("Diff: no changes")
+            mm_print.plain("Diff: no changes")
             return
 
-        print_plain("\nDiff")
+        mm_print.plain("\nDiff")
 
         if self.network_added:
-            print_plain(f"networks added: {self.network_added}")
+            mm_print.plain(f"networks added: {self.network_added}")
         if self.network_removed:
-            print_plain(f"networks removed: {self.network_removed}")
+            mm_print.plain(f"networks removed: {self.network_removed}")
         if self.ticker_added:
-            print_plain(f"tickers added: {self.ticker_added}")
+            mm_print.plain(f"tickers added: {self.ticker_added}")
         if self.ticker_removed:
-            print_plain(f"tickers removed: {self.ticker_removed}")
+            mm_print.plain(f"tickers removed: {self.ticker_removed}")
         if self.address_added:
-            print_plain(f"addresses added: {self.address_added}")
+            mm_print.plain(f"addresses added: {self.address_added}")
         if self.address_removed:
-            print_plain(f"addresses removed: {self.address_removed}")
+            mm_print.plain(f"addresses removed: {self.address_removed}")
 
         if self.balance_changed:
             rows = []
@@ -96,10 +97,11 @@ class Diff(BaseModel):
                     for address in self.balance_changed[network][ticker]:
                         old_value, new_value = self.balance_changed[network][ticker][address]
                         rows.append([network, ticker, address, old_value, new_value, new_value - old_value])
-            print_table("", ["Network", "Ticker", "Address", "Old", "New", "Change"], rows)
+            mm_print.table("", ["Network", "Ticker", "Address", "Old", "New", "Change"], rows)
 
     def _print_json(self) -> None:
-        print_json(data=self.model_dump(), default_serializer=str)
+        # mm_print.json(data=self.model_dump(), type_handlers=str) ?? default?
+        mm_print.json(data=self.model_dump())
 
     @staticmethod
     def calc(balances1: BalancesDict, balances2: BalancesDict) -> Diff:

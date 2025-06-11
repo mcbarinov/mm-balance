@@ -4,19 +4,20 @@ from decimal import Decimal
 from pathlib import Path
 from typing import Annotated, Self
 
+import mm_print
 import pydash
-from mm_crypto_utils import ConfigValidators
-from mm_std import BaseConfig, PrintFormat, fatal
+from mm_cryptocurrency import ConfigValidators, CryptocurrencyConfig
 from pydantic import BeforeValidator, Field, StringConstraints, model_validator
 
 from mm_balance.constants import DEFAULT_NODES, TOKEN_ADDRESS, Network
+from mm_balance.utils import PrintFormat
 
 
 class Validators(ConfigValidators):
     pass
 
 
-class AssetGroup(BaseConfig):
+class AssetGroup(CryptocurrencyConfig):
     """
     Represents a group of cryptocurrency assets of the same type.
 
@@ -30,7 +31,7 @@ class AssetGroup(BaseConfig):
     token: str | None = None  # Token address. If None, it's a native token
     decimals: int | None = None
     coingecko_id: str | None = None
-    addresses: Annotated[list[str], BeforeValidator(Validators.addresses(unique=True))]
+    addresses: Annotated[list[str], BeforeValidator(Validators.addresses(deduplicate=True))]
     share: Decimal = Decimal(1)
 
     @property
@@ -57,7 +58,7 @@ class AssetGroup(BaseConfig):
                 if path.is_file():
                     result += path.read_text().strip().splitlines()
                 else:
-                    fatal(f"File with addresses not found: {path}")
+                    mm_print.fatal(f"File with addresses not found: {path}")
             elif line.startswith("group:"):
                 group_name = line.removeprefix("group:").strip()
                 address_group = next((ag for ag in address_groups if ag.name == group_name), None)
@@ -72,12 +73,12 @@ class AssetGroup(BaseConfig):
         self.addresses = pydash.uniq(result)
 
 
-class AddressCollection(BaseConfig):
+class AddressCollection(CryptocurrencyConfig):
     name: str
-    addresses: Annotated[list[str], BeforeValidator(ConfigValidators.addresses(unique=True))]
+    addresses: Annotated[list[str], BeforeValidator(Validators.addresses(deduplicate=True))]
 
 
-class Settings(BaseConfig):
+class Settings(CryptocurrencyConfig):
     proxies: Annotated[list[str], Field(default_factory=list), BeforeValidator(Validators.proxies())]
     round_ndigits: int = 4
     print_format: PrintFormat = PrintFormat.TABLE
@@ -87,7 +88,7 @@ class Settings(BaseConfig):
     format_number_separator: str = ","  # as thousands separators
 
 
-class Config(BaseConfig):
+class Config(CryptocurrencyConfig):
     groups: list[AssetGroup] = Field(alias="coins")
     addresses: list[AddressCollection] = Field(default_factory=list)
     nodes: dict[Network, list[str]] = Field(default_factory=dict)

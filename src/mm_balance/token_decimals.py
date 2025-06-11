@@ -1,4 +1,4 @@
-from mm_std import fatal
+import mm_print
 
 from mm_balance import rpc
 from mm_balance.config import Config
@@ -30,7 +30,7 @@ async def get_token_decimals(config: Config) -> TokenDecimals:
             elif group.network in (NETWORK_BITCOIN, NETWORK_APTOS):
                 result[group.network][None] = 8
             else:
-                fatal(f"Can't get token decimals for native token on network: {group.network}")
+                mm_print.fatal(f"Can't get token decimals for native token on network: {group.network}")
             continue
 
         # get token_decimals via RPC
@@ -43,7 +43,11 @@ async def get_token_decimals(config: Config) -> TokenDecimals:
         )
 
         if res.is_err():
-            fatal(f"can't get decimals for token {group.ticker} / {group.token}, error={res.unwrap_error()}")
+            msg = f"can't get decimals for token {group.ticker} / {group.token}, error={res.unwrap_err()}"
+            if config.settings.print_debug:
+                msg += f"\n{res.extra}"
+            mm_print.fatal(msg)
+
         result[group.network][group.token] = res.unwrap()
 
     return result

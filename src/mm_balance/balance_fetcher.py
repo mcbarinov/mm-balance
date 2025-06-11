@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from decimal import Decimal
 
-from mm_std import AsyncTaskRunner, PrintFormat, Result
+from mm_concurrency import AsyncTaskRunner
+from mm_result import Result
 from rich.progress import TaskID
 
 from mm_balance import rpc
@@ -9,6 +10,7 @@ from mm_balance.config import Config
 from mm_balance.constants import Network
 from mm_balance.output import utils
 from mm_balance.token_decimals import TokenDecimals
+from mm_balance.utils import PrintFormat
 
 
 @dataclass
@@ -39,7 +41,7 @@ class BalanceFetcher:
         with self.progress_bar:
             runner = AsyncTaskRunner(max_concurrent_tasks=10)
             for network in self.config.networks():
-                runner.add_task(f"process_{network}", self._process_network(network))
+                runner.add(f"process_{network}", self._process_network(network))
             await runner.run()
 
     def get_group_tasks(self, group_index: int, network: Network) -> list[Task]:
@@ -54,7 +56,7 @@ class BalanceFetcher:
     async def _process_network(self, network: Network) -> None:
         runner = AsyncTaskRunner(max_concurrent_tasks=self.config.workers[network])
         for idx, task in enumerate(self.tasks[network]):
-            runner.add_task(str(idx), self._get_balance(network, task.wallet_address, task.token_address))
+            runner.add(str(idx), self._get_balance(network, task.wallet_address, task.token_address))
         res = await runner.run()
 
         # TODO: print job.exceptions if present

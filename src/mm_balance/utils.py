@@ -1,4 +1,5 @@
 from decimal import Decimal
+from enum import StrEnum, unique
 
 
 def fnumber(value: Decimal, separator: str, extra: str | None = None) -> str:
@@ -20,3 +21,10 @@ def round_decimal(value: Decimal, round_ndigits: int) -> Decimal:
     if value == Decimal(0):
         return Decimal(0)
     return round(value, round_ndigits)
+
+
+@unique
+class PrintFormat(StrEnum):
+    PLAIN = "plain"
+    TABLE = "table"
+    JSON = "json"

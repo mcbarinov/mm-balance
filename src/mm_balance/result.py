@@ -110,7 +110,7 @@ def _create_group_result(config: Config, group: AssetGroup, tasks: list[Task], p
             balance_sum += balance.balance
             usd_sum += balance.usd_value
         else:
-            balance = task.balance.unwrap_error()
+            balance = task.balance.unwrap_err()
         addresses.append(AddressBalance(address=task.wallet_address, balance=balance))
 
     balance_sum_share = balance_sum * group.share

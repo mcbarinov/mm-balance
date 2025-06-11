@@ -2,10 +2,10 @@ from decimal import Decimal
 
 from mm_apt import retry as apt_retry
 from mm_btc.blockstream import BlockstreamClient
-from mm_crypto_utils import Nodes, Proxies
+from mm_cryptocurrency import Nodes, Proxies
 from mm_eth import retry as eth_retry
+from mm_result import Result
 from mm_sol import retry as sol_retry
-from mm_std import Result
 
 from mm_balance.constants import (
     NETWORK_APTOS,

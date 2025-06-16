@@ -2,8 +2,8 @@ from collections import defaultdict
 from decimal import Decimal
 
 import pydash
-from mm_cryptocurrency import random_proxy
 from mm_http import http_request
+from mm_web3 import random_proxy
 
 from mm_balance.config import AssetGroup, Config
 from mm_balance.constants import RETRIES_COINGECKO_PRICES, TICKER_TO_COINGECKO_ID

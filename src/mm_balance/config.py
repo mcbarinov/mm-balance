@@ -6,7 +6,7 @@ from typing import Annotated, Self
 
 import mm_print
 import pydash
-from mm_cryptocurrency import ConfigValidators, CryptocurrencyConfig
+from mm_web3 import ConfigValidators, Web3CliConfig
 from pydantic import BeforeValidator, Field, StringConstraints, model_validator
 
 from mm_balance.constants import DEFAULT_NODES, TOKEN_ADDRESS, Network
@@ -17,7 +17,7 @@ class Validators(ConfigValidators):
     pass
 
 
-class AssetGroup(CryptocurrencyConfig):
+class AssetGroup(Web3CliConfig):
     """
     Represents a group of cryptocurrency assets of the same type.
 
@@ -73,12 +73,12 @@ class AssetGroup(CryptocurrencyConfig):
         self.addresses = pydash.uniq(result)
 
 
-class AddressCollection(CryptocurrencyConfig):
+class AddressCollection(Web3CliConfig):
     name: str
     addresses: Annotated[list[str], BeforeValidator(Validators.addresses(deduplicate=True))]
 
 
-class Settings(CryptocurrencyConfig):
+class Settings(Web3CliConfig):
     proxies: Annotated[list[str], Field(default_factory=list), BeforeValidator(Validators.proxies())]
     round_ndigits: int = 4
     print_format: PrintFormat = PrintFormat.TABLE
@@ -88,7 +88,7 @@ class Settings(CryptocurrencyConfig):
     format_number_separator: str = ","  # as thousands separators
 
 
-class Config(CryptocurrencyConfig):
+class Config(Web3CliConfig):
     groups: list[AssetGroup] = Field(alias="coins")
     addresses: list[AddressCollection] = Field(default_factory=list)
     nodes: dict[Network, list[str]] = Field(default_factory=dict)

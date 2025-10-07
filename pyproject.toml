@@ -1,15 +1,15 @@
 [project]
 name = "mm-balance"
-version = "0.5.1"
+version = "0.5.2"
 description = ""
 requires-python = ">=3.13"
 dependencies = [
     "mm-concurrency~=0.1.0",
     "mm-apt==0.4.2",
-    "mm-btc==0.5.3",
-    "mm-eth==0.7.1",
-    "mm-sol==0.7.1",
-    "deepdiff==8.5.0",
+    "mm-btc==0.5.4",
+    "mm-eth==0.7.2",
+    "mm-sol==0.7.2",
+    "deepdiff==8.6.1",
 ]
 [project.scripts]
 mm-balance = "mm_balance.cli:app"
@@ -18,14 +18,14 @@ mm-balance = "mm_balance.cli:app"
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.uv]
-dev-dependencies = [
-    "pytest~=8.4.0",
-    "pytest-xdist~=3.7.0",
-    "ruff~=0.11.13",
+[dependency-groups]
+dev = [
+    "pytest~=8.4.2",
+    "pytest-xdist~=3.8.0",
+    "ruff~=0.13.3",
     "pip-audit~=2.9.0",
-    "bandit~=1.8.3",
-    "mypy~=1.16.0",
+    "bandit~=1.8.6",
+    "mypy~=1.18.2",
 ]
 
 [tool.mypy]

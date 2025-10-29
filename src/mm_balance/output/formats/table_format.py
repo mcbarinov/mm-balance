@@ -108,7 +108,7 @@ def _print_group(config: Config, group: GroupResult) -> None:
         sum_row.append(format_number(group.usd_sum, config.settings.format_number_separator, "$"))
     rows.append(sum_row)
 
-    if group.share < Decimal(1):
+    if group.share != "total":
         sum_share_str = format_number(group.balance_sum_share, config.settings.format_number_separator)
         sum_share_row = [f"sum_share, {group.share}", sum_share_str]
         if config.settings.price:

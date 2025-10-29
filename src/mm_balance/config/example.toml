@@ -17,7 +17,7 @@ addresses = """
 bc1qgdjqv0av3q56jvd82tkdjpy7gdp9ut8tlqmgrpmv24sq90ecnvqqjwvw97 # bitfinex
 bc1ql49ydapnjafl5t2cp9zqpjwe6pdgmxy98859v2 # robinhood
 """
-share = 0.1
+share = "0.5(total - 100.5)"  # or: "total - 1000", "0.3total + 50", etc.
 
 [[coins]]
 ticker = "ETH"

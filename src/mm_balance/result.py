@@ -26,12 +26,12 @@ class GroupResult:
     ticker: str
     network: Network
     comment: str
-    share: Decimal
+    share: str
     addresses: list[AddressBalance]
     balance_sum: Decimal  # sum of all balances in the group
     usd_sum: Decimal  # sum of all usd values in the group
-    balance_sum_share: Decimal  # sum of all balances in the group multiplied by share
-    usd_sum_share: Decimal  # sum of all usd values in the group multiplied by share
+    balance_sum_share: Decimal  # calculated from share expression
+    usd_sum_share: Decimal  # proportional to balance_sum_share
 
 
 @dataclass
@@ -113,8 +113,8 @@ def _create_group_result(config: Config, group: AssetGroup, tasks: list[Task], p
             balance = task.balance.unwrap_err()
         addresses.append(AddressBalance(address=task.wallet_address, balance=balance))
 
-    balance_sum_share = balance_sum * group.share
-    usd_sum_share = usd_sum * group.share
+    balance_sum_share = group.evaluate_share(balance_sum)
+    usd_sum_share = usd_sum * (balance_sum_share / balance_sum) if balance_sum > 0 else Decimal(0)
 
     return GroupResult(
         ticker=group.ticker,

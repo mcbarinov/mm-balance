@@ -10,7 +10,7 @@ from mm_web3 import ConfigValidators, Web3CliConfig
 from pydantic import BeforeValidator, Field, StringConstraints, model_validator
 
 from mm_balance.constants import DEFAULT_NODES, TOKEN_ADDRESS, Network
-from mm_balance.utils import PrintFormat
+from mm_balance.utils import PrintFormat, evaluate_share_expression
 
 
 class Validators(ConfigValidators):
@@ -32,7 +32,7 @@ class AssetGroup(Web3CliConfig):
     decimals: int | None = None
     coingecko_id: str | None = None
     addresses: Annotated[list[str], BeforeValidator(Validators.addresses(deduplicate=True))]
-    share: Decimal = Decimal(1)
+    share: str = "total"
 
     @property
     def name(self) -> str:
@@ -41,6 +41,10 @@ class AssetGroup(Web3CliConfig):
             result += " / " + self.comment
         result += " / " + self.network
         return result
+
+    def evaluate_share(self, balance_sum: Decimal) -> Decimal:
+        """Evaluate share expression with actual balance_sum value."""
+        return evaluate_share_expression(self.share, balance_sum)
 
     @model_validator(mode="after")
     def final_validator(self) -> Self:
@@ -96,7 +100,7 @@ class Config(Web3CliConfig):
     settings: Settings = Field(default_factory=Settings)  # type: ignore[arg-type]
 
     def has_share(self) -> bool:
-        return any(g.share != Decimal(1) for g in self.groups)
+        return any(g.share != "total" for g in self.groups)
 
     def networks(self) -> list[Network]:
         return pydash.uniq([group.network for group in self.groups])

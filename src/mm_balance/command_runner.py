@@ -63,7 +63,7 @@ async def run(params: CommandParameters) -> None:
     elif config.settings.print_format is PrintFormat.JSON:
         json_format.print_result(config, token_decimals, prices, workers, result)
     else:
-        mm_print.fatal("Unsupported print format")
+        mm_print.exit_with_error("Unsupported print format")
 
     if params.save_balances:
         BalancesDict.from_balances_result(result).save_to_path(params.save_balances)

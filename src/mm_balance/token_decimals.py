@@ -30,7 +30,7 @@ async def get_token_decimals(config: Config) -> TokenDecimals:
             elif group.network in (NETWORK_BITCOIN, NETWORK_APTOS):
                 result[group.network][None] = 8
             else:
-                mm_print.fatal(f"Can't get token decimals for native token on network: {group.network}")
+                mm_print.exit_with_error(f"Can't get token decimals for native token on network: {group.network}")
             continue
 
         # get token_decimals via RPC
@@ -46,7 +46,7 @@ async def get_token_decimals(config: Config) -> TokenDecimals:
             msg = f"can't get decimals for token {group.ticker} / {group.token}, error={res.unwrap_err()}"
             if config.settings.print_debug:
                 msg += f"\n{res.extra}"
-            mm_print.fatal(msg)
+            mm_print.exit_with_error(msg)
 
         result[group.network][group.token] = res.unwrap()
 

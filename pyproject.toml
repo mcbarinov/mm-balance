@@ -5,10 +5,10 @@ description = ""
 requires-python = ">=3.13"
 dependencies = [
     "mm-concurrency~=0.1.0",
-    "mm-apt==0.4.2",
-    "mm-btc==0.5.4",
-    "mm-eth==0.7.2",
-    "mm-sol==0.7.2",
+    "mm-apt==0.5.0",
+    "mm-btc==0.5.5",
+    "mm-eth==0.7.3",
+    "mm-sol==0.7.3",
     "deepdiff==8.6.1",
 ]
 [project.scripts]
@@ -22,7 +22,7 @@ build-backend = "hatchling.build"
 dev = [
     "pytest~=8.4.2",
     "pytest-xdist~=3.8.0",
-    "ruff~=0.13.3",
+    "ruff~=0.14.2",
     "pip-audit~=2.9.0",
     "bandit~=1.8.6",
     "mypy~=1.18.2",

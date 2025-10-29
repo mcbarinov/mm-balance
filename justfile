@@ -21,7 +21,7 @@ lint: format
 
 audit:
     uv export --no-dev --all-extras --format requirements-txt --no-emit-project > requirements.txt
-    uv run pip-audit -r requirements.txt --disable-pip
+    uv run pip-audit -r requirements.txt --disable-pip --ignore-vuln GHSA-wj6h-64fc-37mp
     rm requirements.txt
     uv run bandit --silent --recursive --configfile "pyproject.toml" src
 

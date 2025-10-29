@@ -25,8 +25,8 @@ def example_callback(value: bool) -> None:
     if value:
         data = pkgutil.get_data(__name__, "config/example.toml")
         if data is None:
-            mm_print.fatal("Example config not found")
-        mm_print.toml(toml=data.decode("utf-8"))
+            mm_print.exit_with_error("Example config not found")
+        mm_print.toml(data.decode("utf-8"))
         raise typer.Exit
 
 

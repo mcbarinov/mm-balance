@@ -62,7 +62,7 @@ class AssetGroup(Web3CliConfig):
                 if path.is_file():
                     result += path.read_text().strip().splitlines()
                 else:
-                    mm_print.fatal(f"File with addresses not found: {path}")
+                    mm_print.exit_with_error(f"File with addresses not found: {path}")
             elif line.startswith("group:"):
                 group_name = line.removeprefix("group:").strip()
                 address_group = next((ag for ag in address_groups if ag.name == group_name), None)

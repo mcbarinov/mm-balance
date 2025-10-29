@@ -34,7 +34,7 @@ async def get_prices(config: Config) -> Prices:
         if res.status_code != 200:
             continue
 
-        json_body = res.parse_json_body() or {}
+        json_body = res.parse_json()
 
         for ticker, coingecko_id in coingecko_map.items():
             if coingecko_id in json_body:

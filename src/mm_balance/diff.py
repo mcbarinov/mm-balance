@@ -97,7 +97,7 @@ class Diff(BaseModel):
                     for address in self.balance_changed[network][ticker]:
                         old_value, new_value = self.balance_changed[network][ticker][address]
                         rows.append([network, ticker, address, old_value, new_value, new_value - old_value])
-            mm_print.table("", ["Network", "Ticker", "Address", "Old", "New", "Change"], rows)
+            mm_print.table(["Network", "Ticker", "Address", "Old", "New", "Change"], rows)
 
     def _print_json(self) -> None:
         # mm_print.json(data=self.model_dump(), type_handlers=str) ?? default?

@@ -1,4 +1,3 @@
-import ast
 import re
 from decimal import Decimal
 from enum import StrEnum, unique
@@ -25,32 +24,111 @@ def round_decimal(value: Decimal, round_ndigits: int) -> Decimal:
     return round(value, round_ndigits)
 
 
-def _safe_eval_ast(node: ast.expr) -> Decimal:
-    """Safely evaluate an AST node containing only arithmetic operations."""
-    if isinstance(node, ast.Constant):
-        if not isinstance(node.value, (int, float)):
-            raise TypeError(f"Unsupported constant type: {type(node.value).__name__}")
-        return Decimal(str(node.value))
-    if isinstance(node, ast.BinOp):
-        left = _safe_eval_ast(node.left)
-        right = _safe_eval_ast(node.right)
-        if isinstance(node.op, ast.Add):
-            return left + right
-        if isinstance(node.op, ast.Sub):
-            return left - right
-        if isinstance(node.op, ast.Mult):
-            return left * right
-        if isinstance(node.op, ast.Div):
-            return left / right
-        raise TypeError(f"Unsupported operation: {type(node.op).__name__}")
-    if isinstance(node, ast.UnaryOp):
-        operand = _safe_eval_ast(node.operand)
-        if isinstance(node.op, ast.UAdd):
-            return operand
-        if isinstance(node.op, ast.USub):
-            return -operand
-        raise TypeError(f"Unsupported unary operation: {type(node.op).__name__}")
-    raise TypeError(f"Unsupported node type: {type(node).__name__}")
+class _ExpressionParser:
+    """Recursive descent parser for arithmetic expressions.
+
+    Parses expressions by reading left-to-right, respecting operator precedence:
+    1. Parentheses and unary +/- (highest)
+    2. Multiplication and division
+    3. Addition and subtraction (lowest)
+
+    Uses self.pos as a cursor tracking current position in the string.
+    """
+
+    def __init__(self, expr: str) -> None:
+        self.expr = expr.replace(" ", "")  # Expression string with spaces removed
+        self.pos = 0  # Current position/index in the string (starts at beginning)
+
+    def parse(self) -> Decimal:
+        result = self._parse_expression()
+        if self.pos < len(self.expr):
+            raise ValueError(f"Unexpected character at position {self.pos}: '{self.expr[self.pos]}'")
+        return result
+
+    def _parse_expression(self) -> Decimal:
+        """Parse addition and subtraction (lowest precedence)."""
+        result = self._parse_term()
+
+        while self.pos < len(self.expr):
+            if self._peek() == "+":
+                self.pos += 1
+                result = result + self._parse_term()
+            elif self._peek() == "-":
+                self.pos += 1
+                result = result - self._parse_term()
+            else:
+                break
+
+        return result
+
+    def _parse_term(self) -> Decimal:
+        """Parse multiplication and division (medium precedence)."""
+        result = self._parse_factor()
+
+        while self.pos < len(self.expr):
+            if self._peek() == "*":
+                self.pos += 1
+                result = result * self._parse_factor()
+            elif self._peek() == "/":
+                self.pos += 1
+                divisor = self._parse_factor()
+                if divisor == 0:
+                    raise ValueError("Division by zero")
+                result = result / divisor
+            else:
+                break
+
+        return result
+
+    def _parse_factor(self) -> Decimal:
+        """Parse unary +/-, numbers, and parentheses (highest precedence)."""
+        if self._peek() == "+":
+            self.pos += 1
+            return self._parse_factor()
+        if self._peek() == "-":
+            self.pos += 1
+            return -self._parse_factor()
+
+        if self._peek() == "(":
+            self.pos += 1
+            result = self._parse_expression()
+            if self._peek() != ")":
+                raise ValueError(f"Expected ')' at position {self.pos}")
+            self.pos += 1
+            return result
+
+        return self._parse_number()
+
+    def _parse_number(self) -> Decimal:
+        """Parse a numeric value.
+
+        Scans digits, optionally followed by a decimal point and more digits.
+        Advances self.pos past the entire number.
+        """
+        start = self.pos
+
+        # Scan integer part: consecutive digits
+        while self.pos < len(self.expr) and self.expr[self.pos].isdigit():
+            self.pos += 1
+
+        # If there's a decimal point, scan fractional part
+        if self.pos < len(self.expr) and self.expr[self.pos] == ".":
+            self.pos += 1
+            while self.pos < len(self.expr) and self.expr[self.pos].isdigit():
+                self.pos += 1
+
+        # Ensure we consumed at least one digit
+        if start == self.pos:
+            raise ValueError(f"Expected number at position {self.pos}")
+
+        # Extract the substring from start to current position
+        return Decimal(self.expr[start : self.pos])
+
+    def _peek(self) -> str | None:
+        """Peek at the current character without consuming it."""
+        if self.pos < len(self.expr):
+            return self.expr[self.pos]
+        return None
 
 
 def evaluate_share_expression(expression: str, balance_sum: Decimal) -> Decimal:
@@ -72,8 +150,8 @@ def evaluate_share_expression(expression: str, balance_sum: Decimal) -> Decimal:
     # Replace 'total' with actual value in parentheses
     expr = expr.replace("total", f"({balance_sum})")
     try:
-        tree = ast.parse(expr, mode="eval")
-        return _safe_eval_ast(tree.body)
+        parser = _ExpressionParser(expr)
+        return parser.parse()
     except Exception as e:
         raise ValueError(f"Invalid share expression '{expression}': {e}") from e
 

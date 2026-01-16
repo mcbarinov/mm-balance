@@ -1,14 +1,14 @@
 [project]
 name = "mm-balance"
-version = "0.6.0"
+version = "0.6.1"
 description = ""
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 dependencies = [
     "mm-concurrency~=0.1.0",
-    "mm-apt==0.5.0",
-    "mm-btc==0.5.5",
-    "mm-eth==0.7.3",
-    "mm-sol==0.7.3",
+    "mm-apt==0.5.1",
+    "mm-btc==0.5.6",
+    "mm-eth==0.7.4",
+    "mm-sol==0.7.4",
     "deepdiff==8.6.1",
 ]
 [project.scripts]
@@ -20,23 +20,23 @@ build-backend = "hatchling.build"
 
 [dependency-groups]
 dev = [
-    "pytest~=8.4.2",
+    "pytest~=9.0.2",
     "pytest-xdist~=3.8.0",
-    "ruff~=0.14.2",
-    "pip-audit~=2.9.0",
-    "bandit~=1.8.6",
-    "mypy~=1.18.2",
+    "ruff~=0.14.11",
+    "pip-audit~=2.10.0",
+    "bandit~=1.9.2",
+    "mypy~=1.19.1",
 ]
 
 [tool.mypy]
-python_version = "3.13"
+python_version = "3.14"
 warn_no_return = false
 strict = true
 exclude = ["^tests/", "^tmp/"]
 
 [tool.ruff]
 line-length = 130
-target-version = "py313"
+target-version = "py314"
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [

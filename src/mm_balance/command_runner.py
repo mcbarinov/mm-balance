@@ -1,7 +1,6 @@
 import getpass
 from pathlib import Path
 
-import mm_print
 from pydantic import BaseModel
 
 from mm_balance.balance_fetcher import BalanceFetcher
@@ -11,7 +10,7 @@ from mm_balance.output.formats import json_format, table_format
 from mm_balance.price import Prices, get_prices
 from mm_balance.result import create_balances_result
 from mm_balance.token_decimals import get_token_decimals
-from mm_balance.utils import PrintFormat
+from mm_balance.utils import PrintFormat, fatal
 
 
 class CommandParameters(BaseModel):
@@ -63,7 +62,7 @@ async def run(params: CommandParameters) -> None:
     elif config.settings.print_format is PrintFormat.JSON:
         json_format.print_result(config, token_decimals, prices, workers, result)
     else:
-        mm_print.exit_with_error("Unsupported print format")
+        fatal("Unsupported print format")
 
     if params.save_balances:
         BalancesDict.from_balances_result(result).save_to_path(params.save_balances)

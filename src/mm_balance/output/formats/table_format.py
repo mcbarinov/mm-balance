@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-import mm_print
+from mm_print import print_table
 
 from mm_balance.balance_fetcher import BalanceFetcher
 from mm_balance.config import Config
@@ -14,18 +14,18 @@ def print_nodes(config: Config) -> None:
     rows = []
     for network, nodes in config.nodes.items():
         rows.append([network, "\n".join(nodes)])
-    mm_print.table(["network", "nodes"], rows, title="Nodes")
+    print_table(["network", "nodes"], rows, title="Nodes")
 
 
 def print_proxy_count(config: Config) -> None:
-    mm_print.table(["count"], [[len(config.settings.proxies)]], title="Proxies")
+    print_table(["count"], [[len(config.settings.proxies)]], title="Proxies")
 
 
 def print_token_decimals(token_decimals: TokenDecimals) -> None:
     rows = []
     for network, decimals in token_decimals.items():
         rows.append([network, decimals])
-    mm_print.table(["network", "decimals"], rows, title="Token Decimals")
+    print_table(["network", "decimals"], rows, title="Token Decimals")
 
 
 def print_prices(config: Config, prices: Prices) -> None:
@@ -35,7 +35,7 @@ def print_prices(config: Config, prices: Prices) -> None:
             rows.append(
                 [ticker, format_number(price, config.settings.format_number_separator, "$", config.settings.round_ndigits)]
             )
-        mm_print.table(["coin", "usd"], rows, title="Prices")
+        print_table(["coin", "usd"], rows, title="Prices")
 
 
 def print_result(config: Config, result: BalancesResult, workers: BalanceFetcher) -> None:
@@ -57,7 +57,7 @@ def _print_errors(config: Config, workers: BalanceFetcher) -> None:
     for task in error_tasks:
         group = config.groups[task.group_index]
         rows.append([group.ticker + " / " + group.network, task.wallet_address, task.balance.error])  # type: ignore[union-attr]
-    mm_print.table(["coin", "address", "error"], rows, title="Errors")
+    print_table(["coin", "address", "error"], rows, title="Errors")
 
 
 def _print_total(config: Config, total: Total, is_share_total: bool) -> None:
@@ -80,7 +80,7 @@ def _print_total(config: Config, total: Total, is_share_total: bool) -> None:
             rows.append(["stablecoin_sum", format_number(total.stablecoin_sum, config.settings.format_number_separator, "$")])
         rows.append(["total_usd_sum", format_number(total.total_usd_sum, config.settings.format_number_separator, "$")])
 
-    mm_print.table(headers, rows, title=table_name)
+    print_table(headers, rows, title=table_name)
 
 
 def _print_group(config: Config, group: GroupResult) -> None:
@@ -118,4 +118,4 @@ def _print_group(config: Config, group: GroupResult) -> None:
     table_headers = ["address", "balance"]
     if config.settings.price:
         table_headers += ["usd"]
-    mm_print.table(table_headers, rows, title=group_name)
+    print_table(table_headers, rows, title=group_name)

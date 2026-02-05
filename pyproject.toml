@@ -1,14 +1,14 @@
 [project]
 name = "mm-balance"
-version = "0.6.1"
+version = "0.6.2"
 description = ""
 requires-python = ">=3.14"
 dependencies = [
-    "mm-concurrency~=0.1.0",
-    "mm-apt==0.5.1",
-    "mm-btc==0.5.6",
-    "mm-eth==0.7.4",
-    "mm-sol==0.7.4",
+    "mm-concurrency~=0.2.0",
+    "mm-apt==0.6.0",
+    "mm-btc==0.6.0",
+    "mm-eth==0.8.0",
+    "mm-sol==0.8.0",
     "deepdiff==8.6.1",
 ]
 [project.scripts]
@@ -22,9 +22,9 @@ build-backend = "hatchling.build"
 dev = [
     "pytest~=9.0.2",
     "pytest-xdist~=3.8.0",
-    "ruff~=0.14.11",
+    "ruff~=0.15.0",
     "pip-audit~=2.10.0",
-    "bandit~=1.9.2",
+    "bandit~=1.9.3",
     "mypy~=1.19.1",
 ]
 

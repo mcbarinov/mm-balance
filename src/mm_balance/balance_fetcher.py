@@ -39,7 +39,7 @@ class BalanceFetcher:
 
     async def process(self) -> None:
         with self.progress_bar:
-            runner = AsyncTaskRunner(max_concurrent_tasks=10)
+            runner = AsyncTaskRunner(concurrency=10)
             for network in self.config.networks():
                 runner.add(f"process_{network}", self._process_network(network))
             await runner.run()
@@ -54,7 +54,7 @@ class BalanceFetcher:
         return result
 
     async def _process_network(self, network: Network) -> None:
-        runner = AsyncTaskRunner(max_concurrent_tasks=self.config.workers[network])
+        runner = AsyncTaskRunner(concurrency=self.config.workers[network])
         for idx, task in enumerate(self.tasks[network]):
             runner.add(str(idx), self._get_balance(network, task.wallet_address, task.token_address))
         res = await runner.run()

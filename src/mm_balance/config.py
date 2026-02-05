@@ -1,16 +1,13 @@
-from __future__ import annotations
-
 from decimal import Decimal
 from pathlib import Path
 from typing import Annotated, Self
 
-import mm_print
 import pydash
 from mm_web3 import ConfigValidators, Web3CliConfig
 from pydantic import BeforeValidator, Field, StringConstraints, model_validator
 
 from mm_balance.constants import DEFAULT_NODES, TOKEN_ADDRESS, Network
-from mm_balance.utils import PrintFormat, evaluate_share_expression
+from mm_balance.utils import PrintFormat, evaluate_share_expression, fatal
 
 
 class Validators(ConfigValidators):
@@ -62,7 +59,7 @@ class AssetGroup(Web3CliConfig):
                 if path.is_file():
                     result += path.read_text().strip().splitlines()
                 else:
-                    mm_print.exit_with_error(f"File with addresses not found: {path}")
+                    fatal(f"File with addresses not found: {path}")
             elif line.startswith("group:"):
                 group_name = line.removeprefix("group:").strip()
                 address_group = next((ag for ag in address_groups if ag.name == group_name), None)

@@ -4,13 +4,13 @@ import pkgutil
 from pathlib import Path
 from typing import Annotated
 
-import mm_print
 import typer
+from mm_print import print_toml
 
 from mm_balance import command_runner
 from mm_balance.command_runner import CommandParameters
 from mm_balance.constants import NETWORKS
-from mm_balance.utils import PrintFormat
+from mm_balance.utils import PrintFormat, fatal
 
 app = typer.Typer(no_args_is_help=True, pretty_exceptions_enable=False, add_completion=False)
 
@@ -25,8 +25,8 @@ def example_callback(value: bool) -> None:
     if value:
         data = pkgutil.get_data(__name__, "config/example.toml")
         if data is None:
-            mm_print.exit_with_error("Example config not found")
-        mm_print.toml(data.decode("utf-8"))
+            fatal("Example config not found")
+        print_toml(data.decode("utf-8"))
         raise typer.Exit
 
 

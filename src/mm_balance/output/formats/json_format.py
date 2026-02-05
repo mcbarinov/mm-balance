@@ -1,4 +1,4 @@
-import mm_print
+from mm_print import print_json
 
 from mm_balance.balance_fetcher import BalanceFetcher
 from mm_balance.config import Config
@@ -27,4 +27,4 @@ def print_result(
     if errors:
         data["errors"] = errors
 
-    mm_print.json(data)
+    print_json(data)

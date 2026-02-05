@@ -80,6 +80,8 @@ def _create_total(use_share: bool, groups: list[GroupResult]) -> Total:
     if total_usd_sum > 0:
         for ticker, usd_value in coin_usd_values.items():
             if ticker in USD_STABLECOINS:
+                # Intentionally show total stablecoin share for all stablecoins.
+                # We care about combined stablecoin allocation, not individual USDT/USDC breakdown.
                 portfolio_share[ticker] = round(stablecoin_sum * 100 / total_usd_sum, 2)
             else:
                 portfolio_share[ticker] = round(usd_value * 100 / total_usd_sum, 2)

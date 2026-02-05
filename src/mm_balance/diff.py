@@ -19,7 +19,8 @@ class BalancesDict(RootModel[dict[str, dict[str, dict[str, Decimal]]]]):  # netw
         return set(self.model_dump()[network].keys())
 
     def save_to_path(self, balances_file: Path) -> None:
-        json.dump(self.model_dump(), balances_file.open("w"), default=str, indent=2)
+        with balances_file.open("w") as f:
+            json.dump(self.model_dump(), f, default=str, indent=2)
 
     @staticmethod
     def from_balances_result(result: BalancesResult) -> BalancesDict:
@@ -36,7 +37,8 @@ class BalancesDict(RootModel[dict[str, dict[str, dict[str, Decimal]]]]):  # netw
 
     @staticmethod
     def from_file(path: Path) -> BalancesDict:
-        return BalancesDict(json.load(path.open("r")))
+        with path.open("r") as f:
+            return BalancesDict(json.load(f))
 
 
 class Diff(BaseModel):

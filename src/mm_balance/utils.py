@@ -18,7 +18,7 @@ def fnumber(value: Decimal, separator: str, extra: str | None = None) -> str:
 def scale_and_round(value: int, decimals: int, round_ndigits: int) -> Decimal:
     if value == 0:
         return Decimal(0)
-    return round(Decimal(value / 10**decimals), round_ndigits)
+    return round(Decimal(value) / Decimal(10**decimals), round_ndigits)
 
 
 def round_decimal(value: Decimal, round_ndigits: int) -> Decimal:

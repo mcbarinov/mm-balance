@@ -56,7 +56,9 @@ def _print_errors(config: Config, workers: BalanceFetcher) -> None:
     rows = []
     for task in error_tasks:
         group = config.groups[task.group_index]
-        rows.append([group.ticker + " / " + group.network, task.wallet_address, task.balance.error])  # type: ignore[union-attr]
+        # task.balance is guaranteed to be non-None ResultErr here since get_errors() filters for is_err()
+        if task.balance is not None:
+            rows.append([group.ticker + " / " + group.network, task.wallet_address, task.balance.unwrap_err()])
     print_table(["coin", "address", "error"], rows, title="Errors")
 
 

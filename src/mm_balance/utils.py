@@ -1,9 +1,6 @@
 import re
 from decimal import Decimal
 from enum import StrEnum, unique
-from typing import NoReturn
-
-import typer
 
 
 def fnumber(value: Decimal, separator: str, extra: str | None = None) -> str:
@@ -164,9 +161,3 @@ class PrintFormat(StrEnum):
     PLAIN = "plain"
     TABLE = "table"
     JSON = "json"
-
-
-def fatal(message: str) -> NoReturn:
-    """Print an error message and exit with code 1."""
-    typer.echo(message)
-    raise typer.Exit(1)

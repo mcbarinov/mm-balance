@@ -4,7 +4,7 @@ from decimal import Decimal
 from pathlib import Path
 
 from deepdiff.diff import DeepDiff
-from mm_print import print_json, print_plain, print_table
+from mm_clikit import print_json, print_plain, print_table
 from pydantic import BaseModel, RootModel
 
 from mm_balance.result import Balance, BalancesResult

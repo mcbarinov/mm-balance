@@ -5,14 +5,14 @@ from pathlib import Path
 from typing import Annotated
 
 import typer
-from mm_print import print_toml
+from mm_clikit import TyperPlus, fatal, print_toml
 
 from mm_balance import command_runner
 from mm_balance.command_runner import CommandParameters
 from mm_balance.constants import NETWORKS
-from mm_balance.utils import PrintFormat, fatal
+from mm_balance.utils import PrintFormat
 
-app = typer.Typer(no_args_is_help=True, pretty_exceptions_enable=False, add_completion=False)
+app = TyperPlus()
 
 
 def version_callback(value: bool) -> None:

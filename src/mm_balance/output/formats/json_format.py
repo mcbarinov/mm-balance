@@ -1,4 +1,4 @@
-from mm_print import print_json
+from mm_clikit import print_json
 
 from mm_balance.balance_fetcher import BalanceFetcher
 from mm_balance.config import Config

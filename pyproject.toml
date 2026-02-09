@@ -1,15 +1,16 @@
 [project]
 name = "mm-balance"
-version = "0.6.2"
+version = "0.6.3"
 description = ""
 requires-python = ">=3.14"
 dependencies = [
     "mm-concurrency~=0.2.0",
-    "mm-apt==0.6.0",
-    "mm-btc==0.6.0",
-    "mm-eth==0.8.0",
-    "mm-sol==0.8.0",
+    "mm-apt==0.6.1",
+    "mm-btc==0.6.1",
+    "mm-eth==0.8.1",
+    "mm-sol==0.8.1",
     "deepdiff==8.6.1",
+    "mm-clikit~=0.0.4",
 ]
 [project.scripts]
 mm-balance = "mm_balance.cli:app"

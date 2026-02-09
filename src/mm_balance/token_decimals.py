@@ -1,7 +1,8 @@
+from mm_clikit import fatal
+
 from mm_balance import rpc
 from mm_balance.config import Config
 from mm_balance.constants import NETWORK_APTOS, NETWORK_BITCOIN, NETWORK_SOLANA, Network
-from mm_balance.utils import fatal
 
 
 class TokenDecimals(dict[Network, dict[str | None, int]]):  # {network: {None: 18}} -- None is for native token, ex. ETH

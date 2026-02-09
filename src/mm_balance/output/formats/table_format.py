@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-from mm_print import print_table
+from mm_clikit import print_table
 
 from mm_balance.balance_fetcher import BalanceFetcher
 from mm_balance.config import Config

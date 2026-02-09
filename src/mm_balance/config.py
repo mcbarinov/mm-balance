@@ -3,18 +3,19 @@ from pathlib import Path
 from typing import Annotated, Self
 
 import pydash
-from mm_web3 import ConfigValidators, Web3CliConfig
+from mm_clikit import TomlConfig, fatal
+from mm_web3 import ConfigValidators
 from pydantic import BeforeValidator, Field, StringConstraints, model_validator
 
 from mm_balance.constants import DEFAULT_NODES, TOKEN_ADDRESS, Network
-from mm_balance.utils import PrintFormat, evaluate_share_expression, fatal
+from mm_balance.utils import PrintFormat, evaluate_share_expression
 
 
 class Validators(ConfigValidators):
     pass
 
 
-class AssetGroup(Web3CliConfig):
+class AssetGroup(TomlConfig):
     """
     Represents a group of cryptocurrency assets of the same type.
 
@@ -74,12 +75,12 @@ class AssetGroup(Web3CliConfig):
         self.addresses = pydash.uniq(result)
 
 
-class AddressCollection(Web3CliConfig):
+class AddressCollection(TomlConfig):
     name: str
     addresses: Annotated[list[str], BeforeValidator(Validators.addresses(deduplicate=True))]
 
 
-class Settings(Web3CliConfig):
+class Settings(TomlConfig):
     proxies: Annotated[list[str], Field(default_factory=list), BeforeValidator(Validators.proxies())]
     round_ndigits: int = 4
     print_format: PrintFormat = PrintFormat.TABLE
@@ -89,7 +90,7 @@ class Settings(Web3CliConfig):
     format_number_separator: str = ","  # as thousands separators
 
 
-class Config(Web3CliConfig):
+class Config(TomlConfig):
     groups: list[AssetGroup] = Field(alias="coins")
     addresses: list[AddressCollection] = Field(default_factory=list)
     nodes: dict[Network, list[str]] = Field(default_factory=dict)

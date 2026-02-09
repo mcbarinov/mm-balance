@@ -1,6 +1,7 @@
 import getpass
 from pathlib import Path
 
+from mm_clikit import fatal
 from pydantic import BaseModel
 
 from mm_balance.balance_fetcher import BalanceFetcher
@@ -10,7 +11,7 @@ from mm_balance.output.formats import json_format, table_format
 from mm_balance.price import Prices, get_prices
 from mm_balance.result import create_balances_result
 from mm_balance.token_decimals import get_token_decimals
-from mm_balance.utils import PrintFormat, fatal
+from mm_balance.utils import PrintFormat
 
 
 class CommandParameters(BaseModel):
@@ -28,7 +29,7 @@ async def run(params: CommandParameters) -> None:
     zip_password = ""  # nosec
     if params.config_path.name.endswith(".zip"):
         zip_password = getpass.getpass("zip password: ")
-    config = Config.read_toml_config_or_exit(params.config_path, zip_password=zip_password)
+    config = Config.load_or_exit(params.config_path, password=zip_password)
     if params.print_config:
         config.print_and_exit()
 
